@@ -2,9 +2,9 @@
 
 namespace AvocetShores\Conduit\Tests;
 
+use AvocetShores\Conduit\ConduitServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Orchestra\Testbench\TestCase as Orchestra;
-use AvocetShores\Conduit\ConduitServiceProvider;
 
 class TestCase extends Orchestra
 {
