@@ -41,7 +41,8 @@ class ConduitFactory
 
         $driverClass = config("conduit.drivers.$driver");
 
-        if (! class_exists($driverClass)) {
+        // Check if the driver exists
+        if (! $driver || ! class_exists($driverClass)) {
             throw new InvalidArgumentException("Driver $driver does not exist.");
         }
 
@@ -60,6 +61,6 @@ class ConduitFactory
 
         $driverClass = config("conduit.drivers.$driver");
 
-        return new $driverClass;
+        return app($driverClass);
     }
 }
