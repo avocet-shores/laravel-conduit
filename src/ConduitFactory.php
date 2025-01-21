@@ -2,4 +2,7 @@
 
 namespace AvocetShores\Conduit;
 
-class Conduit {}
+class ConduitFactory
+{
+
+}
