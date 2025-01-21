@@ -6,5 +6,5 @@ use AvocetShores\Conduit\Contexts\AIRequestContext;
 
 interface MiddlewareInterface
 {
-    public function handle(AIRequestContext $context, callable $next): AIRequestContext;
+    public function handle(AIRequestContext $context, callable $next);
 }
