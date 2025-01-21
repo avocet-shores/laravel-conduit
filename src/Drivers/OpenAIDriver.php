@@ -3,6 +3,7 @@
 namespace AvocetShores\Conduit\Drivers;
 
 use AvocetShores\Conduit\Dto\Message;
+use AvocetShores\Conduit\Enums\ResponseFormat;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
@@ -16,37 +17,6 @@ use AvocetShores\Conduit\Drivers\DriverInterface;
 
 class OpenAIDriver implements DriverInterface
 {
-    /**
-     * The messages to be sent to the AI model.
-     *
-     * @var array<Message>
-     */
-    protected array $messages = [];
-
-    /**
-     * The AI model name for the request.
-     *
-     * @var string|null
-     */
-    protected ?string $model;
-
-    /**
-     * Optional instruction message to be added to the beginning of the conversation with the given model's instructions role.
-     * i.e. If the model is o1, the instructions will be added with the role 'developer'. But if the model is gpt-4o,
-     * the instructions will be added with the role 'system'. These settings are maintained in the provider-config.json file.
-     * By default, the 'system' role is used.
-     *
-     * @var Message|null
-     */
-    protected ?Message $instructions;
-
-    /**
-     * Whether the response should be in JSON.
-     *
-     * @var bool
-     */
-    protected bool $jsonMode = false;
-
     /**
      * Whether the response should be in structured mode.
      *
@@ -70,10 +40,11 @@ class OpenAIDriver implements DriverInterface
 
     /**
      * @throws ConduitException
+     * @throws ConduitProviderNotAvailableException
      */
     public function run(AIRequestContext $context): OpenAiCompletionsResponse
     {
-        $this->generateRequest();
+        $this->generateRequest($context);
 
         try {
             $response = Http::withToken(config('conduit.openai.key'))
@@ -89,7 +60,7 @@ class OpenAIDriver implements DriverInterface
                 throw new ConduitException('OpenAI API key is invalid.', $context);
             }
 
-            return OpenAiCompletionsResponse::create($response, $context, $this->jsonMode);
+            return OpenAiCompletionsResponse::create($response, $context);
         } catch (ConduitException $e) {
             throw $e;
         } catch (\Exception $e) {
@@ -97,50 +68,43 @@ class OpenAIDriver implements DriverInterface
         }
     }
 
-    protected function generateRequest(): void
+    /**
+     * @throws ConduitException
+     */
+    protected function generateRequest(AIRequestContext $context): void
     {
         $this->request = new OpenAIRequest();
 
-        if ($this->instructions) {
-            array_unshift($this->messages, $this->instructions);
-        }
+        $messages = [];
+        if ($context->getInstructions())
+            $messages[] = $this->resolveInstructions($context->getInstructions());
 
-        $this->request->model = $this->model;
-        $this->request->messages = $this->messages;
+        $messages = array_merge($messages, $context->getMessages());
 
-        if ($this->jsonMode) {
-            $this->request->responseFormat = [
+        $this->request->model = $context->getModel();
+        $this->request->messages = $messages;
+
+        match ($context->getResponseFormat()) {
+            ResponseFormat::JSON => $this->request->responseFormat = [
                 'type' => 'json_object',
-            ];
-        }
-
-        if ($this->structuredMode) {
-            $this->request->responseFormat = [
+            ],
+            ResponseFormat::STRUCTURED_SCHEMA => $this->request->responseFormat = [
                 'type' => 'json_schema',
                 'schema' => $this->schema,
-            ];
-        }
-    }
-
-    public function withStructuredSchema(Schema $schema): static
-    {
-        $this->schema = $schema;
-        $this->structuredMode = true;
-
-        return $this;
+            ],
+            default => null,
+        };
     }
 
     /**
      * @throws ConduitException
      */
-    public function withInstructions(string $instructions): DriverInterface
+    protected function resolveInstructions(string $instructions): Message
     {
         if (!isset($this->model))
-            throw new ConduitException('Model must be set before adding instructions.');
+            throw new ConduitException('AI model must be set.');
 
-        $this->instructions = new Message($this->resolveInstructionsRole($this->model), $instructions);
-
-        return $this;
+        return new Message($this->resolveInstructionsRole($this->model), $instructions);
     }
 
     protected function resolveInstructionsRole(string $model): Role
@@ -155,32 +119,5 @@ class OpenAIDriver implements DriverInterface
 
         // Get the instructions role from the provider-config
         return Role::fromString($providerConfig[$model]['instructions_role']);
-    }
-
-    public function addMessage(string $message, string $role): DriverInterface
-    {
-        $role = Role::fromString($role);
-        $this->messages[] = new Message($role, $message);
-
-        return $this;
-    }
-
-    public function supportsStructuredSchema(): bool
-    {
-        return true;
-    }
-
-    public function usingModel(string $model): DriverInterface
-    {
-        $this->model = $model;
-
-        return $this;
-    }
-
-    public function withJsonMode(): DriverInterface
-    {
-        $this->jsonMode = true;
-
-        return $this;
     }
 }

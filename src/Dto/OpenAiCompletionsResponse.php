@@ -14,7 +14,7 @@ class OpenAiCompletionsResponse extends ConversationResponse
     /**
      * @throws Exception
      */
-    public static function create(Response $openAIResponse, AIRequestContext $context, bool $isJson): self
+    public static function create(Response $openAIResponse, AIRequestContext $context): self
     {
         $response = new self();
 
@@ -38,7 +38,7 @@ class OpenAiCompletionsResponse extends ConversationResponse
 
         $response->output = $decodedResponse['choices'][0]['message']['content'] ?? '';
 
-        if ($isJson) {
+        if ($context->isJsonMode()) {
             $trimmedOutput = $response->trimOutput($response->output);
 
             $response->outputArray = json_decode($trimmedOutput, true);

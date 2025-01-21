@@ -2,6 +2,11 @@
 
 namespace AvocetShores\Conduit\Contexts;
 
+use AvocetShores\Conduit\Dto\Message;
+use AvocetShores\Conduit\Enums\ResponseFormat;
+use AvocetShores\Conduit\Enums\Role;
+use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
+
 class AIRequestContext
 {
     /**
@@ -22,18 +27,28 @@ class AIRequestContext
     protected ?string $instructions = null;
 
     /**
+     * The AI model to use.
+     */
+    protected ?string $model = null;
+
+    /**
      * The messages to be sent to the AI model.
      *
-     * @var array<array{role: string, content: string}>
+     * @var array<Message>
      */
     protected array $messages = [];
 
     /**
-     * Whether the response should be in JSON.
-     *
-     * @var bool
+     * Whether the response should be in JSON mode.
      */
-    protected bool $jsonMode = false;
+    protected ?ResponseFormat $responseFormat;
+
+    protected bool $structuredMode = false;
+
+    /**
+     * The schema definition if using structured outputs.
+     */
+    protected ?Schema $schema;
 
     /**
      * Driver-specific data.
@@ -62,26 +77,15 @@ class AIRequestContext
         return $this->instructions;
     }
 
-    public function addMessage(string $role, string $content): self
+    public function addMessage(string $content, Role $role): self
     {
-        $this->messages[] = compact('content', 'role');
+        $this->messages[] = new Message($role, $content);
         return $this;
     }
 
     public function getMessages(): array
     {
         return $this->messages;
-    }
-
-    public function enableJsonMode(bool $enable = true): self
-    {
-        $this->jsonMode = $enable;
-        return $this;
-    }
-
-    public function isJsonMode(): bool
-    {
-        return $this->jsonMode;
     }
 
     // Driver-specific data
@@ -115,5 +119,45 @@ class AIRequestContext
     public function setRunId(string $runId): void
     {
         $this->laravelAiRunId = $runId;
+    }
+
+    public function setModel(string $model): self
+    {
+        $this->model = $model;
+
+        return $this;
+    }
+
+    public function getModel(): ?string
+    {
+        return $this->model;
+    }
+
+    public function hasModel(): bool
+    {
+        return $this->model !== null;
+    }
+
+    public function setSchema(Schema $schema): self
+    {
+        $this->schema = $schema;
+        return $this;
+    }
+
+    public function getSchema(): ?Schema
+    {
+        return $this->schema;
+    }
+
+    public function setResponseFormat(ResponseFormat $responseFormat): self
+    {
+        $this->responseFormat = $responseFormat;
+
+        return $this;
+    }
+
+    public function getResponseFormat(): ?ResponseFormat
+    {
+        return $this->responseFormat;
     }
 }

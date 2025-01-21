@@ -2,6 +2,7 @@
 
 namespace AvocetShores\Conduit\Dto;
 
+use AvocetShores\Conduit\Enums\ResponseFormat;
 use Aws\Result;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
 use AvocetShores\Conduit\Dto\ConversationResponse;
@@ -15,10 +16,8 @@ class BedrockConverseResponse extends ConversationResponse
     public static function create(
         Result           $result,
         AIRequestContext $context,
-        bool             $isJson,
-        string           $model
-    ): self
-    {
+    ): self {
+
         $response = new self();
 
         $response->usage = new Usage(
@@ -27,11 +26,11 @@ class BedrockConverseResponse extends ConversationResponse
             $result['usage']['totalTokens']
         );
 
-        $response->modelUsed = $model;
+        $response->modelUsed = $context->getModel();
 
         $response->output = $result['output']['message']['content'][0]['text'] ?? '';
 
-        if ($isJson) {
+        if ($context->getResponseFormat() === ResponseFormat::JSON || $context->getResponseFormat() === ResponseFormat::STRUCTURED_SCHEMA) {
             $trimmedOutput = $response->trimOutput($response->output);
 
             $decodedOutput = json_decode($trimmedOutput, true);

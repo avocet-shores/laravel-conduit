@@ -21,10 +21,6 @@ class AmazonBedrockDriver implements DriverInterface
 {
     protected BedrockRuntimeClient $client;
 
-    protected BedrockConverseRequest $request;
-
-    protected bool $jsonMode = false;
-
     public function __construct()
     {
         $credentials = new Credentials(
@@ -37,8 +33,6 @@ class AmazonBedrockDriver implements DriverInterface
             'region' => config('conduit.amazon_bedrock.region'),
             'version' => 'latest',
         ]);
-
-        $this->request = new BedrockConverseRequest();
     }
 
     /**
@@ -48,13 +42,22 @@ class AmazonBedrockDriver implements DriverInterface
     public function run(AIRequestContext $context): ConversationResponse
     {
         try {
-            $result = $this->client->converse($this->request->toArray());
+            // Generate the request
+            $request = $this->generateRequest($context);
+
+            // Send the request to the Amazon Bedrock API
+            $result = $this->client->converse($request->toArray());
+
+            // Create and return the response
+            return BedrockConverseResponse::create($result, $context);
+
         } catch (BedrockRuntimeException $e) {
             // If this is a server error, throw a ProviderNotAvailableException so the request can be retried or rerouted to another provider.
             if ($e->getStatusCode() >= 500) {
                 throw new ConduitProviderNotAvailableException(self::class, $context);
             }
 
+            // If this is a rate limit error, throw a RateLimitExceededException so the request can be retried or rerouted to another provider.
             if ($e->getStatusCode() === 429) {
                 throw new ConduitProviderRateLimitExceededException('Amazon Bedrock API rate limit exceeded.', $context);
             }
@@ -67,55 +70,29 @@ class AmazonBedrockDriver implements DriverInterface
         } catch (\Exception $e) {
             throw new ConduitException($e->getMessage(), $context);
         }
-
-        return BedrockConverseResponse::create($result, $context, $this->jsonMode, $this->request->modelId);
     }
 
-    public function supportsStructuredSchema(): bool
+    protected function generateRequest(AIRequestContext $context): BedrockConverseRequest
     {
-        return false;
-    }
+        $request = new BedrockConverseRequest();
 
-    public function withInstructions(string $instructions): self
-    {
-        $this->request->system = [
-            ['text' => $instructions],
-        ];
+        if ($context->getInstructions()) {
+            $request->system = [
+                ['text' => $context->getInstructions()],
+            ];
+        }
 
-        return $this;
-    }
+        foreach ($context->getMessages() as $message) {
+            $request->messages[] = [
+                'role' => $message->role->value,
+                'content' => [
+                    ['text' => $message->content],
+                ],
+            ];
+        }
 
-    public function addMessage(string $message, string $role): self
-    {
-        $this->request->messages[] = [
-            'role' => $role,
-            'content' => [
-                ['text' => $message],
-            ],
-        ];
+        $request->modelId = $context->getModel();
 
-        return $this;
-    }
-
-    public function usingModel(string $model): self
-    {
-        $this->request->modelId = $model;
-
-        return $this;
-    }
-
-    public function withJsonMode(): self
-    {
-        $this->jsonMode = true;
-
-        return $this;
-    }
-
-    /**
-     * @throws ConduitException
-     */
-    public function withStructuredSchema(Schema $schema): static
-    {
-        throw new ConduitException('Structured schema is not supported by Amazon Bedrock.', 0);
+        return $request;
     }
 }

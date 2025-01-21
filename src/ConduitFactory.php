@@ -2,6 +2,7 @@
 
 namespace AvocetShores\Conduit;
 
+use AvocetShores\Conduit\Contexts\AIRequestContext;
 use AvocetShores\Conduit\Drivers\DriverInterface;
 use InvalidArgumentException;
 
@@ -12,10 +13,11 @@ class ConduitFactory
         $driver = self::resolveDriver($driver);
 
         if ($model) {
-            $driver->usingModel($model);
+            $context = AIRequestContext::create();
+            $context->setModel($model);
         }
 
-        return new ConduitService($driver);
+        return new ConduitService($driver, $context ?? null);
     }
 
     public static function openai(?string $model = null): ConduitService
