@@ -1,6 +1,6 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Features\StructuredOutputs;
+namespace AvocetShores\Conduit\Features\StructuredOutputs;
 
 use Illuminate\Contracts\Support\Arrayable;
 
