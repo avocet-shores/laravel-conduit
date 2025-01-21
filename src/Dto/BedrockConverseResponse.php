@@ -2,11 +2,10 @@
 
 namespace AvocetShores\Conduit\Dto;
 
-use AvocetShores\Conduit\Enums\ResponseFormat;
-use Aws\Result;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
-use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Exceptions\ConduitException;
+use Aws\Result;
 
 class BedrockConverseResponse extends ConversationResponse
 {
@@ -14,11 +13,11 @@ class BedrockConverseResponse extends ConversationResponse
      * @throws ConduitException
      */
     public static function create(
-        Result           $result,
+        Result $result,
         AIRequestContext $context,
     ): self {
 
-        $response = new self();
+        $response = new self;
 
         $response->usage = new Usage(
             $result['usage']['inputTokens'],

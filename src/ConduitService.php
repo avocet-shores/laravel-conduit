@@ -3,8 +3,8 @@
 namespace AvocetShores\Conduit;
 
 use AvocetShores\Conduit\Contexts\AIRequestContext;
-use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Drivers\DriverInterface;
+use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
@@ -14,12 +14,12 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Pipeline;
 use phpDocumentor\Reflection\Types\ClassString;
 
-class ConduitService {
-
+class ConduitService
+{
     protected DriverInterface $driver;
 
     /**
-     * @var array<ClassString|callable> $middlewares
+     * @var array<ClassString|callable>
      */
     protected array $middlewares = [];
 
@@ -62,7 +62,7 @@ class ConduitService {
                     $callable = app($middleware);
 
                     // Ensure the middleware implements the MiddlewareInterface
-                    if (!($callable instanceof MiddlewareInterface)) {
+                    if (! ($callable instanceof MiddlewareInterface)) {
                         throw new \InvalidArgumentException('Middleware must implement the MiddlewareInterface.');
                     }
 
@@ -142,7 +142,7 @@ class ConduitService {
      */
     protected function assertModelIsSet(): void
     {
-        if (!$this->context->hasModel()) {
+        if (! $this->context->hasModel()) {
             throw new AiModelNotSetException('AI model must be set before running Conduit.', $this->context->getRunId());
         }
     }

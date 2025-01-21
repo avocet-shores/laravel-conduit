@@ -11,8 +11,6 @@ class AIRequestContext
 {
     /**
      * Unique identifier for a given request to the Conduit service.
-     *
-     * @var string
      */
     private string $laravelAiRunId;
 
@@ -59,7 +57,7 @@ class AIRequestContext
 
     public static function create(?string $runId = null): self
     {
-        $instance = new self();
+        $instance = new self;
 
         $instance->setRunId($runId ?? (string) \Str::uuid());
 
@@ -69,6 +67,7 @@ class AIRequestContext
     public function setInstructions(?string $instructions): self
     {
         $this->instructions = $instructions;
+
         return $this;
     }
 
@@ -80,6 +79,7 @@ class AIRequestContext
     public function addMessage(string $content, Role $role): self
     {
         $this->messages[] = new Message($role, $content);
+
         return $this;
     }
 
@@ -92,6 +92,7 @@ class AIRequestContext
     public function setDriverData(string $driverKey, $value): self
     {
         $this->driverData[$driverKey] = $value;
+
         return $this;
     }
 
@@ -103,6 +104,7 @@ class AIRequestContext
     public function setMetadata(string $key, $value): self
     {
         $this->metadata[$key] = $value;
+
         return $this;
     }
 
@@ -141,6 +143,7 @@ class AIRequestContext
     public function setSchema(Schema $schema): self
     {
         $this->schema = $schema;
+
         return $this;
     }
 

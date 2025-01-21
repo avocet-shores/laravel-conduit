@@ -6,7 +6,6 @@ use AvocetShores\Conduit\Contexts\AIRequestContext;
 use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Exceptions\ConduitException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
-use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 
 interface DriverInterface
 {
