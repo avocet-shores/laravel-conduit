@@ -39,14 +39,12 @@ class AIRequestContext
     /**
      * Whether the response should be in JSON mode.
      */
-    protected ?ResponseFormat $responseFormat;
-
-    protected bool $structuredMode = false;
+    protected ?ResponseFormat $responseFormat = null;
 
     /**
      * The schema definition if using structured outputs.
      */
-    protected ?Schema $schema;
+    protected ?Schema $schema = null;
 
     /**
      * Driver-specific data.
