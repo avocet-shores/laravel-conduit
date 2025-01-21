@@ -3,6 +3,7 @@
 namespace AvocetShores\Conduit\Dto;
 
 use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Exceptions\ConduitException;
 use Exception;
 use Illuminate\Http\Client\Response;
@@ -36,7 +37,7 @@ class OpenAiCompletionsResponse extends ConversationResponse
 
         $response->output = $decodedResponse['choices'][0]['message']['content'] ?? '';
 
-        if ($context->isJsonMode()) {
+        if ($context->getResponseFormat() === ResponseFormat::JSON) {
             $trimmedOutput = $response->trimOutput($response->output);
 
             $response->outputArray = json_decode($trimmedOutput, true);
