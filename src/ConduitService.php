@@ -45,42 +45,10 @@ class ConduitService
         $this->context = $context ?? $this->context;
 
         return Pipeline::send($this->context)
-            ->through($this->prepareMiddlewareStack())
+            ->through($this->middlewares)
             ->then(function ($context) {
                 return $this->driver->run($context);
             });
-    }
-
-    protected function prepareMiddlewareStack(): Collection
-    {
-        return collect($this->middlewares)->map(function ($middleware) {
-            // If it's a string, assume it's a class and resolve via the app container
-            // If it's a callable, we can pass it along as is
-            if (is_string($middleware) && class_exists($middleware)) {
-                return function ($context, $next) use ($middleware) {
-                    // Resolve from container
-                    $callable = app($middleware);
-
-                    // Ensure the middleware implements the MiddlewareInterface
-                    if (! ($callable instanceof MiddlewareInterface)) {
-                        throw new \InvalidArgumentException('Middleware must implement the MiddlewareInterface.');
-                    }
-
-                    return $callable->handle($context, $next);
-                };
-            }
-
-            // If it’s already a callable, we just adapt it:
-            if (is_callable($middleware)) {
-                return function ($context, $next) use ($middleware) {
-
-                    return $middleware($context, $next);
-                };
-            }
-
-            // Fallback: throw exception or handle error
-            throw new \InvalidArgumentException('Middleware must be a callable, or a class string that implements the MiddlewareInterface.');
-        });
     }
 
     /**
