@@ -6,25 +6,12 @@ use Illuminate\Contracts\Support\Arrayable;
 
 class ConversationResponse implements Arrayable
 {
-    /**
-     * The number of input and output tokens used in this request.
-     */
-    public Usage $usage;
-
-    /**
-     * The string output from the model.
-     */
-    public string $output;
-
-    /**
-     * The array of outputs if the output was JSON.
-     */
-    public array $outputArray = [];
-
-    /**
-     * The model used to generate this response.
-     */
-    public string $modelUsed;
+    public function __construct(
+        public ?string $output = null,
+        public ?string $modelUsed = null,
+        public ?Usage $usage = null,
+        public array $outputArray = [],
+    ) {}
 
     public function toArray(): array
     {
