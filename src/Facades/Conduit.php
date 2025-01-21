@@ -2,15 +2,20 @@
 
 namespace AvocetShores\Conduit\Facades;
 
+use AvocetShores\Conduit\ConduitFactory;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @see \AvocetShores\Conduit\Conduit
+ * @see ConduitFactory
+ *
+ * @method static ConduitFactory make(string $driver = 'default', ?string $model = null)
+ * @method static ConduitFactory openai(?string $model = null)
+ * @method static ConduitFactory bedrock(?string $model = null)
  */
 class Conduit extends Facade
 {
     protected static function getFacadeAccessor(): string
     {
-        return \AvocetShores\Conduit\Conduit::class;
+        return ConduitFactory::class;
     }
 }
