@@ -9,8 +9,7 @@ class ConduitProviderRateLimitExceededException extends ConduitException
     /**
      * Create a new exception instance.
      *
-     * @param string $message
-     * @param AIRequestContext | string $context
+     * @param  AIRequestContext | string  $context
      */
     public function __construct(string $message, $context)
     {

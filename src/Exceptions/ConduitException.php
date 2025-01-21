@@ -9,18 +9,13 @@ class ConduitException extends \Exception
 {
     /**
      * A unique identifier for a given request to the Conduit service.
-     *
-     * @var string $conduitRunId
      */
     public string $conduitRunId;
 
     /**
      * LaravelAIException constructor.
      *
-     * @param string $message
-     * @param AIRequestContext|string $conduitRunId
-     * @param int $code
-     * @param Throwable|null $previous
+     * @param  AIRequestContext|string  $conduitRunId
      */
     public function __construct(string $message, $conduitRunId = '', int $code = 0, ?Throwable $previous = null)
     {

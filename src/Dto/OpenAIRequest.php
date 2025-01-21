@@ -4,9 +4,8 @@ namespace AvocetShores\Conduit\Dto;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
-use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 
-class OpenAIRequest implements Jsonable, Arrayable
+class OpenAIRequest implements Arrayable, Jsonable
 {
     public string $model;
 
@@ -21,7 +20,7 @@ class OpenAIRequest implements Jsonable, Arrayable
             'messages' => $this->messages,
         ];
 
-        if (!empty($this->responseFormat)) {
+        if (! empty($this->responseFormat)) {
             $array['response_format'] = $this->responseFormat;
         }
 

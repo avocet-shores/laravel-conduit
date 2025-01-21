@@ -2,20 +2,17 @@
 
 namespace AvocetShores\Conduit\Drivers;
 
-use Aws\BedrockAgent\Exception\BedrockAgentException;
-use Aws\BedrockRuntime\BedrockRuntimeClient;
-use Aws\BedrockRuntime\Exception\BedrockRuntimeException;
-use Aws\Credentials\Credentials;
-use Illuminate\Support\Facades\Log;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
 use AvocetShores\Conduit\Dto\BedrockConverseRequest;
 use AvocetShores\Conduit\Dto\BedrockConverseResponse;
 use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Exceptions\ConduitException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderRateLimitExceededException;
-use AvocetShores\Conduit\Exceptions\ConduitException;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
-use Nette\NotImplementedException;
+use Aws\BedrockRuntime\BedrockRuntimeClient;
+use Aws\BedrockRuntime\Exception\BedrockRuntimeException;
+use Aws\Credentials\Credentials;
 
 class AmazonBedrockDriver implements DriverInterface
 {
@@ -38,7 +35,7 @@ class AmazonBedrockDriver implements DriverInterface
             'version' => 'latest',
         ]);
 
-        $this->request = new BedrockConverseRequest();
+        $this->request = new BedrockConverseRequest;
     }
 
     /**

@@ -50,34 +50,34 @@ class TestCase extends Orchestra
          */
     }
 
-//    protected function setUpDatabase()
-//    {
-//        $this->runMigrations();
-//    }
-//
-//    protected function runMigrations(): void
-//    {
-//        foreach (File::allFiles(__DIR__.'/../database/migrations') as $migration) {
-//            (require $migration->getPathname())->up();
-//        }
-//
-//        Schema::create('users', function (Blueprint $table) {
-//            $table->id();
-//            $table->string('name');
-//            $table->string('email')->unique();
-//            $table->timestamp('email_verified_at')->nullable();
-//            $table->string('password');
-//            $table->rememberToken();
-//            $table->timestamps();
-//        });
-//
-//        Schema::create('posts', function (Blueprint $table) {
-//            $table->id();
-//            $table->unsignedBigInteger('user_id');
-//            $table->string('title')->nullable();
-//            $table->text('body')->nullable();
-//            $table->unsignedBigInteger('current_version')->nullable();
-//            $table->timestamps();
-//        });
-//    }
+    //    protected function setUpDatabase()
+    //    {
+    //        $this->runMigrations();
+    //    }
+    //
+    //    protected function runMigrations(): void
+    //    {
+    //        foreach (File::allFiles(__DIR__.'/../database/migrations') as $migration) {
+    //            (require $migration->getPathname())->up();
+    //        }
+    //
+    //        Schema::create('users', function (Blueprint $table) {
+    //            $table->id();
+    //            $table->string('name');
+    //            $table->string('email')->unique();
+    //            $table->timestamp('email_verified_at')->nullable();
+    //            $table->string('password');
+    //            $table->rememberToken();
+    //            $table->timestamps();
+    //        });
+    //
+    //        Schema::create('posts', function (Blueprint $table) {
+    //            $table->id();
+    //            $table->unsignedBigInteger('user_id');
+    //            $table->string('title')->nullable();
+    //            $table->text('body')->nullable();
+    //            $table->unsignedBigInteger('current_version')->nullable();
+    //            $table->timestamps();
+    //        });
+    //    }
 }

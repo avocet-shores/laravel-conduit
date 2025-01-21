@@ -6,8 +6,6 @@ class AIRequestContext
 {
     /**
      * Unique identifier for a given request to the Conduit service.
-     *
-     * @var string
      */
     private string $laravelAiRunId;
 
@@ -30,8 +28,6 @@ class AIRequestContext
 
     /**
      * Whether the response should be in JSON.
-     *
-     * @var bool
      */
     protected bool $jsonMode = false;
 
@@ -44,7 +40,7 @@ class AIRequestContext
 
     public static function create(?string $runId = null): self
     {
-        $instance = new self();
+        $instance = new self;
 
         $instance->setRunId($runId ?? (string) \Str::uuid());
 
@@ -54,6 +50,7 @@ class AIRequestContext
     public function setInstructions(?string $instructions): self
     {
         $this->instructions = $instructions;
+
         return $this;
     }
 
@@ -65,6 +62,7 @@ class AIRequestContext
     public function addMessage(string $role, string $content): self
     {
         $this->messages[] = compact('content', 'role');
+
         return $this;
     }
 
@@ -76,6 +74,7 @@ class AIRequestContext
     public function enableJsonMode(bool $enable = true): self
     {
         $this->jsonMode = $enable;
+
         return $this;
     }
 
@@ -88,6 +87,7 @@ class AIRequestContext
     public function setDriverData(string $driverKey, $value): self
     {
         $this->driverData[$driverKey] = $value;
+
         return $this;
     }
 
@@ -99,6 +99,7 @@ class AIRequestContext
     public function setMetadata(string $key, $value): self
     {
         $this->metadata[$key] = $value;
+
         return $this;
     }
 

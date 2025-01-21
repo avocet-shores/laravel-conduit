@@ -33,7 +33,7 @@ it('makes the default driver when no driver is specified', function () {
     $property = $reflection->getProperty('driver');
 
     // Assert that the driver is an instance of the default driver
-    expect($property->getValue($conduit))->toBeInstanceOf(config('conduit.drivers.' . config('conduit.default_driver')));
+    expect($property->getValue($conduit))->toBeInstanceOf(config('conduit.drivers.'.config('conduit.default_driver')));
 });
 
 it('makes the specified driver when a driver is specified', function () {
@@ -50,14 +50,14 @@ it('makes the specified driver when a driver is specified', function () {
 
 it('sets the model when it is optionally passed into the make function', function () {
 
-        $conduit = Conduit::make('amazon_bedrock', 'claude-3-5-sonnet-v2');
+    $conduit = Conduit::make('amazon_bedrock', 'claude-3-5-sonnet-v2');
 
-        // Use reflection to get the driver property
-        $reflection = new ReflectionClass($conduit);
-        $property = $reflection->getProperty('driver');
+    // Use reflection to get the driver property
+    $reflection = new ReflectionClass($conduit);
+    $property = $reflection->getProperty('driver');
 
-        // Assert that the driver is an instance of the specified driver
-        expect($property->getValue($conduit))->toBeInstanceOf(config('conduit.drivers.amazon_bedrock'));
+    // Assert that the driver is an instance of the specified driver
+    expect($property->getValue($conduit))->toBeInstanceOf(config('conduit.drivers.amazon_bedrock'));
 
-        //
+    //
 });

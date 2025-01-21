@@ -3,19 +3,19 @@
 namespace AvocetShores\Conduit;
 
 use AvocetShores\Conduit\Contexts\AIRequestContext;
-use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Drivers\DriverInterface;
+use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Pipeline;
 use phpDocumentor\Reflection\Types\ClassString;
 
-class ConduitService {
-
+class ConduitService
+{
     protected DriverInterface $driver;
 
     /**
-     * @var array<ClassString|callable> $middlewares
+     * @var array<ClassString|callable>
      */
     protected array $middlewares = [];
 
@@ -46,7 +46,7 @@ class ConduitService {
                     $callable = app($middleware);
 
                     // Ensure the middleware implements the MiddlewareInterface
-                    if (!($callable instanceof MiddlewareInterface)) {
+                    if (! ($callable instanceof MiddlewareInterface)) {
                         throw new \InvalidArgumentException('Middleware must implement the MiddlewareInterface.');
                     }
 
@@ -76,6 +76,7 @@ class ConduitService {
     public function pushMiddleware($middleware): self
     {
         $this->middlewares[] = $middleware;
+
         return $this;
     }
 

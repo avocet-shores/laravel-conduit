@@ -2,17 +2,15 @@
 
 namespace AvocetShores\Conduit\Drivers;
 
-use AvocetShores\Conduit\Dto\Message;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Dto\Message;
 use AvocetShores\Conduit\Dto\OpenAiCompletionsResponse;
 use AvocetShores\Conduit\Dto\OpenAIRequest;
 use AvocetShores\Conduit\Enums\Role;
-use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
 use AvocetShores\Conduit\Exceptions\ConduitException;
+use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
-use AvocetShores\Conduit\Drivers\DriverInterface;
+use Illuminate\Support\Facades\Http;
 
 class OpenAIDriver implements DriverInterface
 {
@@ -25,8 +23,6 @@ class OpenAIDriver implements DriverInterface
 
     /**
      * The AI model name for the request.
-     *
-     * @var string|null
      */
     protected ?string $model;
 
@@ -35,36 +31,26 @@ class OpenAIDriver implements DriverInterface
      * i.e. If the model is o1, the instructions will be added with the role 'developer'. But if the model is gpt-4o,
      * the instructions will be added with the role 'system'. These settings are maintained in the provider-config.json file.
      * By default, the 'system' role is used.
-     *
-     * @var Message|null
      */
     protected ?Message $instructions;
 
     /**
      * Whether the response should be in JSON.
-     *
-     * @var bool
      */
     protected bool $jsonMode = false;
 
     /**
      * Whether the response should be in structured mode.
-     *
-     * @var bool
      */
     protected bool $structuredMode = false;
 
     /**
      * The schema for the structured output.
-     *
-     * @var ?Schema
      */
     protected ?Schema $schema;
 
     /**
      * The OpenAI request object.
-     *
-     * @var OpenAIRequest|null
      */
     protected ?OpenAIRequest $request;
 
@@ -99,7 +85,7 @@ class OpenAIDriver implements DriverInterface
 
     protected function generateRequest(): void
     {
-        $this->request = new OpenAIRequest();
+        $this->request = new OpenAIRequest;
 
         if ($this->instructions) {
             array_unshift($this->messages, $this->instructions);
@@ -135,8 +121,9 @@ class OpenAIDriver implements DriverInterface
      */
     public function withInstructions(string $instructions): DriverInterface
     {
-        if (!isset($this->model))
+        if (! isset($this->model)) {
             throw new ConduitException('Model must be set before adding instructions.');
+        }
 
         $this->instructions = new Message($this->resolveInstructionsRole($this->model), $instructions);
 
@@ -146,12 +133,13 @@ class OpenAIDriver implements DriverInterface
     protected function resolveInstructionsRole(string $model): Role
     {
         // Get provider-config json from package's resources
-        $providerConfig = json_decode(file_get_contents(__DIR__ . '/../../resources/config/provider-config.json'), true);
+        $providerConfig = json_decode(file_get_contents(__DIR__.'/../../resources/config/provider-config.json'), true);
 
         // Check to see if the given model has a record in the provider-config
         // If not, set to the default (User)
-        if (!isset($providerConfig[$model]) || !isset($providerConfig[$model]['instructions_role']))
+        if (! isset($providerConfig[$model]) || ! isset($providerConfig[$model]['instructions_role'])) {
             return Role::SYSTEM;
+        }
 
         // Get the instructions role from the provider-config
         return Role::fromString($providerConfig[$model]['instructions_role']);

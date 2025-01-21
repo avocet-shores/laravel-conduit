@@ -2,7 +2,6 @@
 
 namespace AvocetShores\Conduit\Dto;
 
-use Aws\Result;
 use Illuminate\Contracts\Support\Arrayable;
 
 class ConversationResponse implements Arrayable
@@ -19,8 +18,6 @@ class ConversationResponse implements Arrayable
 
     /**
      * The array of outputs if the output was JSON.
-     *
-     * @var array $outputArray
      */
     public array $outputArray = [];
 
@@ -43,11 +40,11 @@ class ConversationResponse implements Arrayable
     {
         $output = trim($output, '`');
         $output = trim($output, 'json');
-        if (!str_contains($output, '{')) {
-            $output = '{' . $output;
+        if (! str_contains($output, '{')) {
+            $output = '{'.$output;
         }
-        if (!str_contains($output, '}')) {
-            $output = $output . '}';
+        if (! str_contains($output, '}')) {
+            $output = $output.'}';
         }
 
         return $output;
