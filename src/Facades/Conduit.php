@@ -3,14 +3,15 @@
 namespace AvocetShores\Conduit\Facades;
 
 use AvocetShores\Conduit\ConduitFactory;
+use AvocetShores\Conduit\ConduitService;
 use Illuminate\Support\Facades\Facade;
 
 /**
  * @see ConduitFactory
  *
- * @method static ConduitFactory make(string $driver = 'default', ?string $model = null)
- * @method static ConduitFactory openai(?string $model = null)
- * @method static ConduitFactory bedrock(?string $model = null)
+ * @method static ConduitService make(string $driver = 'default', ?string $model = null)
+ * @method static ConduitService openai(?string $model = null)
+ * @method static ConduitService bedrock(?string $model = null)
  */
 class Conduit extends Facade
 {
