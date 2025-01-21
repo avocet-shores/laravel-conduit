@@ -107,7 +107,7 @@ class OpenAIDriver implements DriverInterface
         $providerConfig = json_decode(file_get_contents(__DIR__.'/../../resources/config/provider-config.json'), true);
 
         // Check to see if the given model has a record in the provider-config
-        // If not, set to the default (User)
+        // If not, set to the default (System)
         if (! isset($providerConfig[$model]) || ! isset($providerConfig[$model]['instructions_role'])) {
             return Role::SYSTEM;
         }
