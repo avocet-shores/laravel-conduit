@@ -1,10 +1,10 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Dto;
+namespace AvocetShores\Conduit\Dto;
 
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
-use JaredCannon\LaravelAI\Features\StructuredOutputs\Schema;
+use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 
 class OpenAIRequest implements Jsonable, Arrayable
 {

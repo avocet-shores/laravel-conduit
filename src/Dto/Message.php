@@ -1,8 +1,8 @@
 <?php
 
-namespace JaredCannon\LaravelAI;
+namespace AvocetShores\Conduit\Dto;
 
-use JaredCannon\LaravelAI\Enums\Role;
+use AvocetShores\Conduit\Enums\Role;
 
 class Message
 {

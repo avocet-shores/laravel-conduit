@@ -1,6 +1,6 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Dto;
+namespace AvocetShores\Conduit\Dto;
 
 use Illuminate\Contracts\Support\Arrayable;
 

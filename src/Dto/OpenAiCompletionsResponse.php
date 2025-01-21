@@ -1,12 +1,12 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Dto;
+namespace AvocetShores\Conduit\Dto;
 
 use Exception;
 use Illuminate\Http\Client\Response;
-use JaredCannon\LaravelAI\Contexts\AIRequestContext;
-use JaredCannon\LaravelAI\Dto\ConversationResponse;
-use JaredCannon\LaravelAI\Exceptions\LaravelAIException;
+use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Exceptions\ConduitException;
 
 class OpenAiCompletionsResponse extends ConversationResponse
 {
@@ -21,7 +21,7 @@ class OpenAiCompletionsResponse extends ConversationResponse
         $decodedResponse = json_decode($openAIResponse->body(), true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new LaravelAIException('Failed to decode JSON response from OpenAI', $context->getRunId());
+            throw new ConduitException('Failed to decode JSON response from OpenAI', $context->getRunId());
         }
 
         $response->usage = new Usage(
@@ -33,7 +33,7 @@ class OpenAiCompletionsResponse extends ConversationResponse
         $response->modelUsed = $decodedResponse['model'];
 
         if ($decodedResponse['choices'] === null || $decodedResponse['choices'][0] === null) {
-            throw new LaravelAIException('Failed to get message from response from OpenAI', $context->getRunId());
+            throw new ConduitException('Failed to get message from response from OpenAI', $context->getRunId());
         }
 
         $response->output = $decodedResponse['choices'][0]['message']['content'] ?? '';
@@ -44,7 +44,7 @@ class OpenAiCompletionsResponse extends ConversationResponse
             $response->outputArray = json_decode($trimmedOutput, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new LaravelAIException('Failed to decode JSON output from OpenAI.', $context->getRunId());
+                throw new ConduitException('Failed to decode JSON output from OpenAI.', $context->getRunId());
             }
         }
 

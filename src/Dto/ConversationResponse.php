@@ -1,14 +1,20 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Dto;
+namespace AvocetShores\Conduit\Dto;
 
 use Aws\Result;
 use Illuminate\Contracts\Support\Arrayable;
 
 class ConversationResponse implements Arrayable
 {
+    /**
+     * The number of input and output tokens used in this request.
+     */
     public Usage $usage;
 
+    /**
+     * The string output from the model.
+     */
     public string $output;
 
     /**
@@ -18,6 +24,9 @@ class ConversationResponse implements Arrayable
      */
     public array $outputArray = [];
 
+    /**
+     * The model used to generate this response.
+     */
     public string $modelUsed;
 
     public function toArray(): array

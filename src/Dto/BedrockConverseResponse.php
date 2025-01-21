@@ -1,16 +1,16 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Dto;
+namespace AvocetShores\Conduit\Dto;
 
 use Aws\Result;
-use JaredCannon\LaravelAI\Contexts\AIRequestContext;
-use JaredCannon\LaravelAI\Dto\ConversationResponse;
-use JaredCannon\LaravelAI\Exceptions\LaravelAIException;
+use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Exceptions\ConduitException;
 
 class BedrockConverseResponse extends ConversationResponse
 {
     /**
-     * @throws LaravelAIException
+     * @throws ConduitException
      */
     public static function create(
         Result           $result,
@@ -37,7 +37,7 @@ class BedrockConverseResponse extends ConversationResponse
             $decodedOutput = json_decode($trimmedOutput, true);
 
             if (json_last_error() !== JSON_ERROR_NONE) {
-                throw new LaravelAIException('Failed to decode JSON output from Bedrock.', $context->getRunId());
+                throw new ConduitException('Failed to decode JSON output from Bedrock.', $context->getRunId());
             }
 
             $response->outputArray = $decodedOutput;
