@@ -3,9 +3,8 @@
 namespace AvocetShores\Conduit\Exceptions;
 
 use AvocetShores\Conduit\Contexts\AIRequestContext;
-use AvocetShores\Conduit\Exceptions\LaravelAIException;
 
-class AIProviderRateLimitExceededException extends LaravelAIException
+class ConduitProviderRateLimitExceededException extends ConduitException
 {
     /**
      * Create a new exception instance.

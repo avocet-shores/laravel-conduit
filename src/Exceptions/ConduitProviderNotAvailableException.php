@@ -4,7 +4,7 @@ namespace AvocetShores\Conduit\Exceptions;
 
 use AvocetShores\Conduit\Contexts\AIRequestContext;
 
-class AIProviderNotAvailableException extends LaravelAIException
+class ConduitProviderNotAvailableException extends ConduitException
 {
     public function __construct(string $driver, AIRequestContext $context)
     {

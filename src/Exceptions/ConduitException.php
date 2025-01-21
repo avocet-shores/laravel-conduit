@@ -5,27 +5,27 @@ namespace AvocetShores\Conduit\Exceptions;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
 use Throwable;
 
-class LaravelAIException extends \Exception
+class ConduitException extends \Exception
 {
     /**
-     * A unique identifier for a given request to the Laravel AI service.
+     * A unique identifier for a given request to the Conduit service.
      *
-     * @var string $laravelAiRunId
+     * @var string $conduitRunId
      */
-    public string $laravelAiRunId;
+    public string $conduitRunId;
 
     /**
      * LaravelAIException constructor.
      *
      * @param string $message
-     * @param AIRequestContext|string $laravelAiRunId
+     * @param AIRequestContext|string $conduitRunId
      * @param int $code
      * @param Throwable|null $previous
      */
-    public function __construct(string $message, $laravelAiRunId, int $code = 0, Throwable $previous = null)
+    public function __construct(string $message, $conduitRunId = '', int $code = 0, ?Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
-        $this->laravelAiRunId = $laravelAiRunId instanceof AIRequestContext ? $laravelAiRunId->getRunId() : $laravelAiRunId;
+        $this->conduitRunId = $conduitRunId instanceof AIRequestContext ? $conduitRunId->getRunId() : $conduitRunId;
     }
 }
