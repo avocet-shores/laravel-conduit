@@ -113,6 +113,7 @@ it('middleware pipeline executes in order and can mutate the context', function 
     // Closure-based middleware:
     $closureMiddleware = function (AIRequestContext $context, Closure $next) {
         $context->setInstructions('Modified instructions');
+
         return $next($context);
     };
 
@@ -161,7 +162,7 @@ it('enableJsonOutput sets the response format to JSON', function () {
         ->with(Mockery::on(function (AIRequestContext $context) {
             return $context->getResponseFormat() === ResponseFormat::JSON;
         }))
-        ->andReturn(new ConversationResponse( 'Returned in JSON'));
+        ->andReturn(new ConversationResponse('Returned in JSON'));
 
     $service = new ConduitService($driverMock);
     $service->usingModel('json-model')
@@ -205,17 +206,17 @@ it('using the Conduit facade works and calls ConduitService under the hood', fun
             'choices' => [
                 [
                     'message' => [
-                        'content' => 'Hello from facade'
-                    ]
-                ]
+                        'content' => 'Hello from facade',
+                    ],
+                ],
             ],
             'usage' => [
                 'prompt_tokens' => 10,
                 'completion_tokens' => 20,
-                'total_tokens' => 30
+                'total_tokens' => 30,
             ],
-            'model' => 'gpt-4'
-        ])
+            'model' => 'gpt-4',
+        ]),
     ]);
 
     // If Conduit::make() internally resolves ConduitService, test the chain

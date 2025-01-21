@@ -10,7 +10,6 @@ use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Pipeline;
 use phpDocumentor\Reflection\Types\ClassString;
 
