@@ -9,29 +9,23 @@ class Schema implements Arrayable, JsonSerializable
 {
     /**
      * This should always be set to Type::Object
-     *
-     * @var Type $type
      */
     protected Type $type = Type::Object;
 
     /**
      * The name of the schema
-     *
-     * @var string $name
      */
     protected string $name = '';
 
     /**
      * The description of the schema
-     *
-     * @var string $description
      */
     protected string $description = '';
 
     /**
      * All the schema's inputs/properties
      *
-     * @var array<Input> $properties
+     * @var array<Input>
      */
     protected array $properties;
 
@@ -42,7 +36,7 @@ class Schema implements Arrayable, JsonSerializable
 
         // Validate that all properties are of type Input
         foreach ($properties as $property) {
-            if (!($property instanceof Input)) {
+            if (! ($property instanceof Input)) {
                 throw new \InvalidArgumentException('All properties must be of type Input');
             }
         }

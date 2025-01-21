@@ -2,7 +2,4 @@
 
 namespace AvocetShores\Conduit\Tests\Fixtures;
 
-class NoInterfaceDriver
-{
-
-}
+class NoInterfaceDriver {}

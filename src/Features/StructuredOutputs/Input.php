@@ -8,22 +8,16 @@ class Input implements Arrayable
 {
     /**
      * The type of the input
-     *
-     * @var Type
      */
     public Type $type;
 
     /**
      * The name of the input
-     *
-     * @var ?string
      */
     public ?string $name;
 
     /**
      * The enum type of the input if the type is Enum
-     *
-     * @var ?Type
      */
     public ?Type $enumType;
 
@@ -36,13 +30,10 @@ class Input implements Arrayable
 
     /**
      * The description of the input
-     *
-     * @var ?string
      */
     public ?string $description;
 
     /**
-     *
      * @var array The enum values for the input if the type is Enum
      */
     public array $enum = [];
@@ -67,7 +58,7 @@ class Input implements Arrayable
         ?string $name = null,
         ?string $description = null,
         array $enum = [],
-        Type $enumType = null,
+        ?Type $enumType = null,
         array $properties = [],
         array $items = [],
         array $anyOf = [],
@@ -87,7 +78,7 @@ class Input implements Arrayable
         ?string $name = null,
         ?string $description = null,
         array $enum = [],
-        Type $enumType = null,
+        ?Type $enumType = null,
         array $properties = [],
         array $items = [],
         array $anyOf = [],
@@ -162,6 +153,7 @@ class Input implements Arrayable
                 $input['type'] = $this->type->value;
                 $input['properties'] = collect($this->properties)->mapWithKeys(function (Input $input) {
                     $name = $input->name;
+
                     return [$input->name => collect($input->toArray())->filter(function ($value, $key) use ($name) {
                         return $key !== $name;
                     })->toArray()];
@@ -199,6 +191,7 @@ class Input implements Arrayable
             if ($item->name) {
                 $formattedItems[$item->name] = $item->toArray();
                 unset($formattedItems[$item->name]['name']);
+
                 continue;
             }
 

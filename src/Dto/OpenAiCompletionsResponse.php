@@ -2,21 +2,19 @@
 
 namespace AvocetShores\Conduit\Dto;
 
+use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Exceptions\ConduitException;
 use Exception;
 use Illuminate\Http\Client\Response;
-use AvocetShores\Conduit\Contexts\AIRequestContext;
-use AvocetShores\Conduit\Dto\ConversationResponse;
-use AvocetShores\Conduit\Exceptions\ConduitException;
 
 class OpenAiCompletionsResponse extends ConversationResponse
 {
-
     /**
      * @throws Exception
      */
     public static function create(Response $openAIResponse, AIRequestContext $context): self
     {
-        $response = new self();
+        $response = new self;
 
         $decodedResponse = json_decode($openAIResponse->body(), true);
 

@@ -31,8 +31,6 @@ class ConduitFactory
     }
 
     /**
-     * @param string $driver
-     * @return void
      * @throws InvalidArgumentException
      */
     protected static function validateDriver(string $driver): void
@@ -43,11 +41,11 @@ class ConduitFactory
 
         $driverClass = config("conduit.drivers.$driver");
 
-        if (!class_exists($driverClass)) {
+        if (! class_exists($driverClass)) {
             throw new InvalidArgumentException("Driver $driver does not exist.");
         }
 
-        if (!in_array(DriverInterface::class, class_implements($driverClass))) {
+        if (! in_array(DriverInterface::class, class_implements($driverClass))) {
             throw new InvalidArgumentException("Driver $driver must implement DriverInterface.");
         }
     }
@@ -62,6 +60,6 @@ class ConduitFactory
 
         $driverClass = config("conduit.drivers.$driver");
 
-        return new $driverClass();
+        return new $driverClass;
     }
 }

@@ -5,7 +5,7 @@ namespace AvocetShores\Conduit\Dto;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 
-class BedrockConverseRequest implements Jsonable, Arrayable
+class BedrockConverseRequest implements Arrayable, Jsonable
 {
     /**
      * Format is [[ 'text' => '']]
