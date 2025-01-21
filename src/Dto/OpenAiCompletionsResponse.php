@@ -23,11 +23,28 @@ class OpenAiCompletionsResponse extends ConversationResponse
             throw new ConduitException('Failed to decode JSON response from OpenAI', $context->getRunId());
         }
 
+        // First check to make sure the array keys exist
+        if (
+            ! array_key_exists('usage', $decodedResponse)
+            || ! array_key_exists('prompt_tokens', $decodedResponse['usage'])
+            || ! array_key_exists('completion_tokens', $decodedResponse['usage'])
+            || ! array_key_exists('total_tokens', $decodedResponse['usage'])
+        ) {
+            throw new ConduitException('Failed to get usage from response from OpenAI', $context->getRunId());
+        }
+
         $response->usage = new Usage(
             $decodedResponse['usage']['prompt_tokens'],
             $decodedResponse['usage']['completion_tokens'],
             $decodedResponse['usage']['total_tokens']
         );
+
+        if (
+            ! array_key_exists('model', $decodedResponse)
+            || ! array_key_exists('choices', $decodedResponse)
+        ) {
+            throw new ConduitException('Failed to get model or choices from response from OpenAI', $context->getRunId());
+        }
 
         $response->modelUsed = $decodedResponse['model'];
 
