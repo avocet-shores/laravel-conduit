@@ -1,19 +1,17 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Drivers;
+namespace AvocetShores\Conduit\Drivers;
 
-use JaredCannon\LaravelAI\Contexts\AIRequestContext;
-use JaredCannon\LaravelAI\Dto\ConversationResponse;
-use JaredCannon\LaravelAI\Features\StructuredOutputs\Schema;
+use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 
 interface DriverInterface
 {
-    public function converse(AIRequestContext $context): ConversationResponse;
-
     /**
-     * Determine if the driver supports tools.
+     * Run the conversation.
      */
-    public function supportsTools(): bool;
+    public function run(AIRequestContext $context): ConversationResponse;
 
     /**
      * Add instructions to the beginning of the conversation.
@@ -30,9 +28,18 @@ interface DriverInterface
      */
     public function supportsStructuredSchema(): bool;
 
+    /**
+     * Set the model to use for the conversation.
+     */
     public function usingModel(string $model): self;
 
+    /**
+     * Set the response to be in JSON mode.
+     */
     public function withJsonMode(): self;
 
+    /**
+     * Set the response to be in structured mode (if supported).
+     */
     public function withStructuredSchema(Schema $schema): static;
 }

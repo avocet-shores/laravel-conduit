@@ -1,20 +1,20 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Drivers;
+namespace AvocetShores\Conduit\Drivers;
 
 use Aws\BedrockAgent\Exception\BedrockAgentException;
 use Aws\BedrockRuntime\BedrockRuntimeClient;
 use Aws\BedrockRuntime\Exception\BedrockRuntimeException;
 use Aws\Credentials\Credentials;
 use Illuminate\Support\Facades\Log;
-use JaredCannon\LaravelAI\Contexts\AIRequestContext;
-use JaredCannon\LaravelAI\Dto\BedrockConverseRequest;
-use JaredCannon\LaravelAI\Dto\BedrockConverseResponse;
-use JaredCannon\LaravelAI\Dto\ConversationResponse;
-use JaredCannon\LaravelAI\Exceptions\AIProviderNotAvailableException;
-use JaredCannon\LaravelAI\Exceptions\AIProviderRateLimitExceededException;
-use JaredCannon\LaravelAI\Exceptions\LaravelAIException;
-use JaredCannon\LaravelAI\Features\StructuredOutputs\Schema;
+use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Dto\BedrockConverseRequest;
+use AvocetShores\Conduit\Dto\BedrockConverseResponse;
+use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
+use AvocetShores\Conduit\Exceptions\ConduitProviderRateLimitExceededException;
+use AvocetShores\Conduit\Exceptions\ConduitException;
+use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 use Nette\NotImplementedException;
 
 class AmazonBedrockDriver implements DriverInterface
@@ -28,13 +28,13 @@ class AmazonBedrockDriver implements DriverInterface
     public function __construct()
     {
         $credentials = new Credentials(
-            config('laravel-ai.providers.amazon_bedrock.key'),
-            config('laravel-ai.providers.amazon_bedrock.secret'),
+            config('conduit.amazon_bedrock.key'),
+            config('conduit.amazon_bedrock.secret'),
         );
 
         $this->client = new BedrockRuntimeClient([
             'credentials' => $credentials,
-            'region' => config('laravel-ai.providers.amazon_bedrock.region'),
+            'region' => config('conduit.amazon_bedrock.region'),
             'version' => 'latest',
         ]);
 
@@ -42,39 +42,33 @@ class AmazonBedrockDriver implements DriverInterface
     }
 
     /**
-     * @throws LaravelAIException
-     * @throws AIProviderNotAvailableException
+     * @throws ConduitException
+     * @throws ConduitProviderNotAvailableException
      */
-    public function converse(AIRequestContext $context): ConversationResponse
+    public function run(AIRequestContext $context): ConversationResponse
     {
         try {
             $result = $this->client->converse($this->request->toArray());
         } catch (BedrockRuntimeException $e) {
-            // If this is a server error, throw a ProviderNotAvailableException
+            // If this is a server error, throw a ProviderNotAvailableException so the request can be retried or rerouted to another provider.
             if ($e->getStatusCode() >= 500) {
-                throw new AIProviderNotAvailableException(self::class, $context);
+                throw new ConduitProviderNotAvailableException(self::class, $context);
             }
 
             if ($e->getStatusCode() === 429) {
-                throw new AIProviderRateLimitExceededException('Amazon Bedrock API rate limit exceeded.', $context);
+                throw new ConduitProviderRateLimitExceededException('Amazon Bedrock API rate limit exceeded.', $context);
             }
 
             if ($e->getStatusCode() === 401) {
-                throw new LaravelAIException('Amazon Bedrock API access denied.', $context, $e->getCode());
+                throw new ConduitException('Amazon Bedrock API access denied.', $context, $e->getCode());
             }
 
-            throw new LaravelAIException($e->getMessage(), $context);
+            throw new ConduitException($e->getMessage(), $context);
         } catch (\Exception $e) {
-            throw new LaravelAIException($e->getMessage(), $context);
+            throw new ConduitException($e->getMessage(), $context);
         }
 
         return BedrockConverseResponse::create($result, $context, $this->jsonMode, $this->request->modelId);
-    }
-
-    public function supportsTools(): bool
-    {
-        // TODO: Tools/Functions are supported, but not yet implemented.
-        throw new NotImplementedException();
     }
 
     public function supportsStructuredSchema(): bool
@@ -118,10 +112,10 @@ class AmazonBedrockDriver implements DriverInterface
     }
 
     /**
-     * @throws LaravelAIException
+     * @throws ConduitException
      */
     public function withStructuredSchema(Schema $schema): static
     {
-        throw new LaravelAIException('Structured schema is not supported by Amazon Bedrock.', 0);
+        throw new ConduitException('Structured schema is not supported by Amazon Bedrock.', 0);
     }
 }

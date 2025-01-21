@@ -1,24 +1,43 @@
 <?php
 
-namespace JaredCannon\LaravelAI\Drivers;
+namespace AvocetShores\Conduit\Drivers;
 
+use AvocetShores\Conduit\Dto\Message;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use JaredCannon\LaravelAI\Contexts\AIRequestContext;
-use JaredCannon\LaravelAI\Dto\OpenAiCompletionsResponse;
-use JaredCannon\LaravelAI\Dto\OpenAIRequest;
-use JaredCannon\LaravelAI\Enums\Role;
-use JaredCannon\LaravelAI\Exceptions\AIProviderNotAvailableException;
-use JaredCannon\LaravelAI\Exceptions\LaravelAIException;
-use JaredCannon\LaravelAI\Features\StructuredOutputs\Schema;
-use JaredCannon\LaravelAI\Message;
+use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Dto\OpenAiCompletionsResponse;
+use AvocetShores\Conduit\Dto\OpenAIRequest;
+use AvocetShores\Conduit\Enums\Role;
+use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
+use AvocetShores\Conduit\Exceptions\ConduitException;
+use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
+use AvocetShores\Conduit\Drivers\DriverInterface;
 
 class OpenAIDriver implements DriverInterface
 {
+    /**
+     * The messages to be sent to the AI model.
+     *
+     * @var array<Message>
+     */
     protected array $messages = [];
 
-    protected string $model;
+    /**
+     * The AI model name for the request.
+     *
+     * @var string|null
+     */
+    protected ?string $model;
 
+    /**
+     * Optional instruction message to be added to the beginning of the conversation with the given model's instructions role.
+     * i.e. If the model is o1, the instructions will be added with the role 'developer'. But if the model is gpt-4o,
+     * the instructions will be added with the role 'system'. These settings are maintained in the provider-config.json file.
+     * By default, the 'system' role is used.
+     *
+     * @var Message|null
+     */
     protected ?Message $instructions;
 
     /**
@@ -42,34 +61,39 @@ class OpenAIDriver implements DriverInterface
      */
     protected ?Schema $schema;
 
-    protected OpenAIRequest $request;
+    /**
+     * The OpenAI request object.
+     *
+     * @var OpenAIRequest|null
+     */
+    protected ?OpenAIRequest $request;
 
     /**
-     * @throws LaravelAIException
+     * @throws ConduitException
      */
-    public function converse(AIRequestContext $context): OpenAiCompletionsResponse
+    public function run(AIRequestContext $context): OpenAiCompletionsResponse
     {
         $this->generateRequest();
 
         try {
-            $response = Http::withToken(config('laravel-ai.providers.openai.key'))
-                ->timeout(config('laravel-ai.providers.openai.openai_curl_timeout', 180))
-                ->post(config('laravel-ai.providers.openai.completions_endpoint'), $this->request->toArray());
+            $response = Http::withToken(config('conduit.openai.key'))
+                ->timeout(config('conduit.openai.openai_curl_timeout', 180))
+                ->post(config('conduit.openai.completions_endpoint'), $this->request->toArray());
 
             // If the response is a 5xx error, throw a ProviderNotAvailableException
             if ($response->serverError()) {
-                throw new AIProviderNotAvailableException(self::class, $context);
+                throw new ConduitProviderNotAvailableException(self::class, $context);
             }
 
             if ($response->status() === 401) {
-                throw new LaravelAIException('OpenAI API key is invalid.', $context);
+                throw new ConduitException('OpenAI API key is invalid.', $context);
             }
 
             return OpenAiCompletionsResponse::create($response, $context, $this->jsonMode);
-        } catch (LaravelAIException $e) {
+        } catch (ConduitException $e) {
             throw $e;
         } catch (\Exception $e) {
-            throw new LaravelAIException($e->getMessage(), $context);
+            throw new ConduitException($e->getMessage(), $context);
         }
     }
 
@@ -106,21 +130,31 @@ class OpenAIDriver implements DriverInterface
         return $this;
     }
 
-    public function supportsTools(): bool
-    {
-        return false;
-    }
-
+    /**
+     * @throws ConduitException
+     */
     public function withInstructions(string $instructions): DriverInterface
     {
-        if (isset($this->model) && config("laravel-ai.providers.openai.models.$this->model.instructions_role")) {
-            $instructionsRole = config("laravel-ai.providers.openai.models.$this->model.instructions_role");
-            $this->instructions = new Message($instructionsRole, $instructions);
-        } else {
-            $this->instructions = new Message(Role::SYSTEM, $instructions);
-        }
+        if (!isset($this->model))
+            throw new ConduitException('Model must be set before adding instructions.');
+
+        $this->instructions = new Message($this->resolveInstructionsRole($this->model), $instructions);
 
         return $this;
+    }
+
+    protected function resolveInstructionsRole(string $model): Role
+    {
+        // Get provider-config json from package's resources
+        $providerConfig = json_decode(file_get_contents(__DIR__ . '/../../resources/config/provider-config.json'), true);
+
+        // Check to see if the given model has a record in the provider-config
+        // If not, set to the default (User)
+        if (!isset($providerConfig[$model]) || !isset($providerConfig[$model]['instructions_role']))
+            return Role::SYSTEM;
+
+        // Get the instructions role from the provider-config
+        return Role::fromString($providerConfig[$model]['instructions_role']);
     }
 
     public function addMessage(string $message, string $role): DriverInterface
