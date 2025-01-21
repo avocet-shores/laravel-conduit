@@ -69,7 +69,7 @@ class OpenAIDriver implements DriverInterface
 
         $messages = [];
         if ($context->getInstructions()) {
-            $messages[] = $this->resolveInstructions($context->getInstructions());
+            $messages[] = $this->resolveInstructions($context);
         }
 
         $messages = array_merge($messages, $context->getMessages());
@@ -92,13 +92,18 @@ class OpenAIDriver implements DriverInterface
     /**
      * @throws ConduitException
      */
-    protected function resolveInstructions(string $instructions): Message
+    protected function resolveInstructions(AIRequestContext $context): Message
     {
-        if (! isset($this->model)) {
+        if (! $context->hasModel()) {
             throw new ConduitException('AI model must be set.');
         }
 
-        return new Message($this->resolveInstructionsRole($this->model), $instructions);
+        return new Message(
+            role: $this->resolveInstructionsRole(
+                model: $context->getModel()
+            ),
+            content: $context->getInstructions()
+        );
     }
 
     protected function resolveInstructionsRole(string $model): Role
