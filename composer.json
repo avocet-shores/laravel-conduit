@@ -1,17 +1,17 @@
 {
-    "name": ":vendor_slug/:package_slug",
-    "description": ":package_description",
+    "name": "avocet-shores/laravel-conduit",
+    "description": "Laravel Conduit offers a clean, unified API for working with multiple AI providers.",
     "keywords": [
-        ":vendor_name",
+        "Avocet Shores",
         "laravel",
-        ":package_slug"
+        "laravel-conduit"
     ],
-    "homepage": "https://github.com/:vendor_slug/:package_slug",
+    "homepage": "https://github.com/avocet-shores/laravel-conduit",
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": "author@domain.com",
+            "name": "Jared Cannon",
+            "email": "jaredcannon9@gmail.com",
             "role": "Developer"
         }
     ],
@@ -35,13 +35,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VendorName\\Skeleton\\": "src/",
-            "VendorName\\Skeleton\\Database\\Factories\\": "database/factories/"
+            "AvocetShores\\Conduit\\": "src/",
+            "AvocetShores\\Conduit\\Database\\Factories\\": "database/factories/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "VendorName\\Skeleton\\Tests\\": "tests/",
+            "AvocetShores\\Conduit\\Tests\\": "tests/",
             "Workbench\\App\\": "workbench/app/"
         }
     },
@@ -63,10 +63,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "VendorName\\Skeleton\\SkeletonServiceProvider"
+                "AvocetShores\\Conduit\\ConduitServiceProvider"
             ],
             "aliases": {
-                "Skeleton": "VendorName\\Skeleton\\Facades\\Skeleton"
+                "Conduit": "AvocetShores\\Conduit\\Facades\\Conduit"
             }
         }
     },

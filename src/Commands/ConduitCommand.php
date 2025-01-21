@@ -1,12 +1,12 @@
 <?php
 
-namespace VendorName\Skeleton\Commands;
+namespace AvocetShores\Conduit\Commands;
 
 use Illuminate\Console\Command;
 
-class SkeletonCommand extends Command
+class ConduitCommand extends Command
 {
-    public $signature = 'skeleton';
+    public $signature = 'laravel-conduit';
 
     public $description = 'My command';
 
