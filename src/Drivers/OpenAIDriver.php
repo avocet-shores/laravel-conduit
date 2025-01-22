@@ -10,6 +10,7 @@ use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\ConduitException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
+use AvocetShores\Conduit\Exceptions\ConduitProviderRateLimitExceededException;
 use Illuminate\Support\Facades\Http;
 
 class OpenAIDriver implements DriverInterface
@@ -25,9 +26,9 @@ class OpenAIDriver implements DriverInterface
      */
     public function run(AIRequestContext $context): OpenAiCompletionsResponse
     {
-        $this->generateRequest($context);
-
         try {
+            $this->generateRequest($context);
+
             $response = Http::withToken(config('conduit.openai.key'))
                 ->timeout(config('conduit.openai.openai_curl_timeout', 180))
                 ->post(config('conduit.openai.completions_endpoint'), $this->request->toArray());
@@ -35,6 +36,11 @@ class OpenAIDriver implements DriverInterface
             // If the response is a 5xx error, throw a ProviderNotAvailableException
             if ($response->serverError()) {
                 throw new ConduitProviderNotAvailableException(self::class, $context);
+            }
+
+            // If the response is a 429 error, throw a RateLimitExceededException
+            if ($response->status() === 429) {
+                throw new ConduitProviderRateLimitExceededException('OpenAI rate limit exceeded', $context);
             }
 
             if ($response->status() === 401) {
