@@ -17,8 +17,13 @@ class AmazonBedrockDriver implements DriverInterface
 {
     protected BedrockRuntimeClient $client;
 
-    public function __construct()
+    public function __construct(?BedrockRuntimeClient $client = null)
     {
+        if ($client) {
+            $this->client = $client;
+            return;
+        }
+
         $credentials = new Credentials(
             config('conduit.amazon_bedrock.key'),
             config('conduit.amazon_bedrock.secret'),

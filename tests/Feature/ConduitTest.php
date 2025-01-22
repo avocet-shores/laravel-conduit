@@ -2,6 +2,7 @@
 
 use AvocetShores\Conduit\ConduitService;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
+use AvocetShores\Conduit\Drivers\AmazonBedrockDriver;
 use AvocetShores\Conduit\Drivers\DriverInterface;
 use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Enums\ResponseFormat;
@@ -10,6 +11,7 @@ use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
 use AvocetShores\Conduit\Facades\Conduit;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
+use Aws\BedrockRuntime\BedrockRuntimeClient;
 
 it('throws exception when a driver does not exist in the config', function () {
 
@@ -67,8 +69,6 @@ it('sets the model when it is optionally passed into the make function', functio
 
     // Assert that the driver is an instance of the specified driver
     expect($property->getValue($conduit))->toBeInstanceOf(config('conduit.drivers.amazon_bedrock'));
-
-    //
 });
 
 it('it can run when a valid model is set', function () {
@@ -77,6 +77,7 @@ it('it can run when a valid model is set', function () {
         ->once()
         ->andReturn((new ConversationResponse('Hello from AI')));
 
+    /** @var DriverInterface $driverMock */
     $service = new ConduitService($driverMock);
 
     $service->usingModel('gpt-4')
@@ -90,7 +91,10 @@ it('it can run when a valid model is set', function () {
 });
 
 it('it throws an AiModelNotSetException if model is not set', function () {
+
     $driverMock = Mockery::mock(DriverInterface::class);
+
+    /** @var DriverInterface $driverMock */
     $service = new ConduitService($driverMock);
 
     $service->run(); // Should throw
@@ -223,7 +227,7 @@ it('using the Conduit facade works and calls ConduitService under the hood', fun
     // If Conduit::make() internally resolves ConduitService, test the chain
     $response = Conduit::make('openai')
         ->usingModel('gpt-4')
-        ->withInstructions('You are the best!')
+        ->withInstructions('You are a helpful assistant.')
         ->addMessage('Hello from facade test!', Role::USER)
         ->run();
 
@@ -233,6 +237,45 @@ it('using the Conduit facade works and calls ConduitService under the hood', fun
         ->and($response->usage->inputTokens)->toBe(10)
         ->and($response->usage->outputTokens)->toBe(20)
         ->and($response->usage->totalTokens)->toBe(30);
+});
+
+it('runs the amazon_bedrock driver', function () {
+    // Create the mock client
+    $mockClient = Mockery::mock(BedrockRuntimeClient::class);
+
+    // Define what we expect when the "converse" method is called
+    $mockClient->shouldReceive('converse')
+        ->once()
+        ->with(Mockery::type('array'))
+        ->andReturn(new Aws\Result([
+            'output' => [
+                'message' => [
+                    'content' => [
+                        ['text' => 'Mocked response from Bedrock']
+                    ]
+                ]
+            ],
+            'usage' => [
+                'inputTokens' => 10,
+                'outputTokens' => 20,
+                'totalTokens' => 30,
+            ],
+        ]));
+
+    // Instantiate the driver with the mocked client
+    $driver = new AmazonBedrockDriver($mockClient);
+
+    // Bind the driver to the container so it can be resolved
+    app()->bind(AmazonBedrockDriver::class, fn() => $driver);
+
+    // Run Conduit
+    $response = Conduit::bedrock('some-model')
+        ->withInstructions('You are a helpful assistant.')
+        ->run();
+
+    // Assert the response is what we expect
+    $this->assertInstanceOf(ConversationResponse::class, $response);
+    $this->assertEquals('Mocked response from Bedrock', $response->output ?? null);
 });
 
 it('calls the fallback driver when the first driver throws a provider exception', function () {
