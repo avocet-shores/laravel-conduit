@@ -16,7 +16,7 @@ it('throws provider exception when the response is a server error', function () 
     $context = AIRequestContext::create();
     $context->setModel('test');
 
-    $driver = new OpenAIDriver();
+    $driver = new OpenAIDriver;
 
     $driver->run($context);
 })->throws(ConduitProviderNotAvailableException::class);
@@ -31,7 +31,7 @@ it('throws rate limit exceeded when server responds with 429', function () {
     $context = AIRequestContext::create();
     $context->setModel('test');
 
-    $driver = new OpenAIDriver();
+    $driver = new OpenAIDriver;
 
     $driver->run($context);
 })->throws(ConduitProviderRateLimitExceededException::class);
@@ -46,7 +46,7 @@ it('throws conduit exception when the response is a 401 error', function () {
     $context = AIRequestContext::create();
     $context->setModel('test');
 
-    $driver = new OpenAIDriver();
+    $driver = new OpenAIDriver;
 
     $driver->run($context);
 })->throws(ConduitException::class);
