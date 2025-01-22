@@ -33,6 +33,16 @@ class ConduitFactory
     /**
      * @throws InvalidArgumentException
      */
+    public static function validateAndResolveDriver(string $driver): DriverInterface
+    {
+        self::validateDriver($driver);
+
+        return self::resolveDriver($driver);
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     */
     protected static function validateDriver(string $driver): void
     {
         if ($driver === 'default') {
@@ -42,11 +52,15 @@ class ConduitFactory
         $driverClass = config("conduit.drivers.$driver");
 
         // Check if the driver exists
-        if (! $driver || ! class_exists($driverClass)) {
+        if (
+            ! $driverClass
+            || (! class_exists($driverClass) && ! app()->has($driverClass))
+        ) {
             throw new InvalidArgumentException("Driver $driver does not exist.");
         }
 
-        if (! in_array(DriverInterface::class, class_implements($driverClass))) {
+        // Check if the driver implements the DriverInterface
+        if (! in_array(DriverInterface::class, class_implements(app($driverClass)))) {
             throw new InvalidArgumentException("Driver $driver must implement DriverInterface.");
         }
     }

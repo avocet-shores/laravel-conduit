@@ -2,6 +2,7 @@
 
 namespace AvocetShores\Conduit\Contexts;
 
+use AvocetShores\Conduit\Drivers\DriverInterface;
 use AvocetShores\Conduit\Dto\Message;
 use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
@@ -12,7 +13,7 @@ class AIRequestContext
     /**
      * Unique identifier for a given request to the Conduit service.
      */
-    private string $laravelAiRunId;
+    private string $conduitRunId;
 
     /**
      * @var array<string, mixed>
@@ -53,13 +54,26 @@ class AIRequestContext
      */
     protected array $driverData = [];
 
+    protected ?DriverInterface $fallbackDriver = null;
+
+    protected ?string $fallbackModel = null;
+
+    protected bool $isFallback = false;
+
     public static function create(?string $runId = null): self
     {
         $instance = new self;
 
-        $instance->setRunId($runId ?? (string) \Str::uuid());
+        if ($runId) {
+            $instance->setRunId($runId);
+        }
 
         return $instance;
+    }
+
+    public function __construct()
+    {
+        $this->setRunId((string) \Str::uuid());
     }
 
     public function setInstructions(?string $instructions): self
@@ -113,12 +127,12 @@ class AIRequestContext
 
     public function getRunId(): string
     {
-        return $this->laravelAiRunId;
+        return $this->conduitRunId;
     }
 
     public function setRunId(string $runId): void
     {
-        $this->laravelAiRunId = $runId;
+        $this->conduitRunId = $runId;
     }
 
     public function setModel(string $model): self
@@ -160,5 +174,41 @@ class AIRequestContext
     public function getResponseFormat(): ?ResponseFormat
     {
         return $this->responseFormat;
+    }
+
+    public function setFallbackDriver(DriverInterface $driver): self
+    {
+        $this->fallbackDriver = $driver;
+
+        return $this;
+    }
+
+    public function getFallbackDriver(): ?DriverInterface
+    {
+        return $this->fallbackDriver;
+    }
+
+    public function setFallbackModel(string $model): self
+    {
+        $this->fallbackModel = $model;
+
+        return $this;
+    }
+
+    public function getFallbackModel(): ?string
+    {
+        return $this->fallbackModel;
+    }
+
+    public function setIsFallback(bool $isFallback): self
+    {
+        $this->isFallback = $isFallback;
+
+        return $this;
+    }
+
+    public function isFallback(): bool
+    {
+        return $this->isFallback;
     }
 }

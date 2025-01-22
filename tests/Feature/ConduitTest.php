@@ -7,6 +7,7 @@ use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
+use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
 use AvocetShores\Conduit\Facades\Conduit;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
 
@@ -231,4 +232,33 @@ it('using the Conduit facade works and calls ConduitService under the hood', fun
         ->and($response->usage->inputTokens)->toBe(10)
         ->and($response->usage->outputTokens)->toBe(20)
         ->and($response->usage->totalTokens)->toBe(30);
+});
+
+it('calls the fallback driver when the first driver throws a provider exception', function () {
+    $driverMock = Mockery::mock(DriverInterface::class);
+
+    // The first driver should throw a provider exception
+    $driverMock->shouldReceive('run')
+        ->once()
+        ->andThrow(new ConduitProviderNotAvailableException('FakeDriver', new AIRequestContext));
+
+    $fallbackDriverMock = Mockery::mock(DriverInterface::class);
+
+    // The fallback driver should be called
+    $fallbackDriverMock->shouldReceive('run')
+        ->once()
+        ->andReturn(new ConversationResponse('Fallback response'));
+
+    config()->set('conduit.drivers.fallback_driver', 'fallback_driver');
+    app()->bind('fallback_driver', function () use ($fallbackDriverMock) {
+        return $fallbackDriverMock;
+    });
+
+    $service = new ConduitService($driverMock);
+    $response = $service->usingModel('some-model')
+        ->withInstructions('You are the best!')
+        ->withFallback('fallback_driver', 'fallback-model')
+        ->run();
+
+    expect($response->output)->toBe('Fallback response');
 });

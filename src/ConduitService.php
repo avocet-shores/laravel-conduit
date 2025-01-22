@@ -8,6 +8,10 @@ use AvocetShores\Conduit\Dto\ConversationResponse;
 use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
+use AvocetShores\Conduit\Exceptions\ConduitException;
+use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
+use AvocetShores\Conduit\Exceptions\ConduitProviderRateLimitExceededException;
+use AvocetShores\Conduit\Facades\Conduit;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
 use Illuminate\Support\Collection;
@@ -36,19 +40,56 @@ class ConduitService
 
     /**
      * @throws AiModelNotSetException
+     * @throws ConduitException
      */
-    public function run(?AIRequestContext $context = null): ConversationResponse
+    public function run(): ConversationResponse
     {
         $this->assertModelIsSet();
 
-        // TODO : Does this lead to confusing outcomes if the context is accidentally overridden here?
-        $this->context = $context ?? $this->context;
+        if ($this->context->isFallback()) {
+            // If we are in fallback mode, we need to switch the driver and model
+            $this->driver = $this->context->getFallbackDriver();
+            $this->context->setModel($this->context->getFallbackModel());
+        }
 
-        return Pipeline::send($this->context)
-            ->through($this->middlewares)
-            ->then(function ($context) {
-                return $this->driver->run($context);
-            });
+        try {
+            return Pipeline::send($this->context)
+                ->through($this->middlewares)
+                ->then(function ($context) {
+                    return $this->driver->run($context);
+                });
+        } catch (ConduitProviderNotAvailableException|ConduitProviderRateLimitExceededException $e) {
+            return $this->handleProviderException($e);
+        }
+    }
+
+    /**
+     * @throws ConduitException
+     * @throws AiModelNotSetException
+     */
+    protected function handleProviderException(ConduitException $e): ConversationResponse
+    {
+        if ($this->context->isFallback()) {
+            // If we are in fallback mode and the fallback driver also fails, we need to throw the exception
+            throw $e;
+        }
+
+        if ($this->context->getFallbackDriver() && $this->context->getFallbackModel()) {
+            $this->context->setIsFallback(true);
+        }
+
+        return $this->run();
+    }
+
+    /**
+     * Set the fallback driver and model to use if the primary driver fails.
+     */
+    public function withFallback(string $driverName, string $model): self
+    {
+        $this->context->setFallbackDriver(ConduitFactory::validateAndResolveDriver($driverName));
+        $this->context->setFallbackModel($model);
+
+        return $this;
     }
 
     /**

@@ -4,6 +4,7 @@ namespace AvocetShores\Conduit\Facades;
 
 use AvocetShores\Conduit\ConduitFactory;
 use AvocetShores\Conduit\ConduitService;
+use AvocetShores\Conduit\Drivers\DriverInterface;
 use Illuminate\Support\Facades\Facade;
 
 /**
