@@ -11,7 +11,6 @@ use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
 use AvocetShores\Conduit\Exceptions\ConduitException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderRateLimitExceededException;
-use AvocetShores\Conduit\Facades\Conduit;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
 use Illuminate\Support\Facades\Pipeline;
