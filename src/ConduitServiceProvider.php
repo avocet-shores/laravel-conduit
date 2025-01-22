@@ -17,9 +17,6 @@ class ConduitServiceProvider extends PackageServiceProvider
          */
         $package
             ->name('laravel-conduit')
-            ->hasConfigFile()
-            ->hasViews()
-            ->hasMigration('create_laravel_conduit_table')
-            ->hasCommand(ConduitCommand::class);
+            ->hasConfigFile();
     }
 }
