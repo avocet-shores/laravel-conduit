@@ -10,7 +10,6 @@ use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\ConduitException;
 use AvocetShores\Conduit\Exceptions\ConduitProviderNotAvailableException;
-use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 use Illuminate\Support\Facades\Http;
 
 class OpenAIDriver implements DriverInterface
