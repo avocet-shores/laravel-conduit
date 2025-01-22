@@ -14,7 +14,6 @@ use AvocetShores\Conduit\Exceptions\ConduitProviderRateLimitExceededException;
 use AvocetShores\Conduit\Facades\Conduit;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
 use AvocetShores\Conduit\Middleware\MiddlewareInterface;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Pipeline;
 use phpDocumentor\Reflection\Types\ClassString;
 
