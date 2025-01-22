@@ -82,48 +82,48 @@ class Input implements Arrayable
         array $properties = [],
         array $items = [],
         array $anyOf = [],
-    ): static {
-        return new static($type, $name, $description, $enum, $enumType, $properties, $items, $anyOf);
+    ): self {
+        return new self($type, $name, $description, $enum, $enumType, $properties, $items, $anyOf);
     }
 
-    public static function string(?string $name = null, ?string $description = null): static
+    public static function string(?string $name = null, ?string $description = null): self
     {
-        return new static(Type::String, $name, $description);
+        return new self(Type::String, $name, $description);
     }
 
-    public static function number(?string $name = null, ?string $description = null): static
+    public static function number(?string $name = null, ?string $description = null): self
     {
-        return new static(Type::Number, $name, $description);
+        return new self(Type::Number, $name, $description);
     }
 
-    public static function boolean(?string $name = null, ?string $description = null): static
+    public static function boolean(?string $name = null, ?string $description = null): self
     {
-        return new static(Type::Boolean, $name, $description);
+        return new self(Type::Boolean, $name, $description);
     }
 
-    public static function integer(?string $name = null, ?string $description = null): static
+    public static function integer(?string $name = null, ?string $description = null): self
     {
-        return new static(Type::Integer, $name, $description);
+        return new self(Type::Integer, $name, $description);
     }
 
-    public static function object(?string $name = null, ?string $description = null, array $properties = []): static
+    public static function object(?string $name = null, ?string $description = null, array $properties = []): self
     {
-        return new static(Type::Object, $name, $description, [], null, $properties);
+        return new self(Type::Object, $name, $description, [], null, $properties);
     }
 
-    public static function array(?string $name = null, ?string $description = null, array $items = []): static
+    public static function array(?string $name = null, ?string $description = null, array $items = []): self
     {
-        return new static(Type::Array, $name, $description, [], null, [], $items);
+        return new self(Type::Array, $name, $description, [], null, [], $items);
     }
 
-    public static function enum(string $name, Type $enumType, ?string $description = null, array $enum = []): static
+    public static function enum(string $name, Type $enumType, ?string $description = null, array $enum = []): self
     {
-        return new static(Type::Enum, $name, $description, $enum, $enumType);
+        return new self(Type::Enum, $name, $description, $enum, $enumType);
     }
 
-    public static function anyOf(?string $name = null, ?string $description = null, array $anyOf = []): static
+    public static function anyOf(?string $name = null, ?string $description = null, array $anyOf = []): self
     {
-        return new static(Type::AnyOf, $name, $description, [], null, [], [], $anyOf);
+        return new self(Type::AnyOf, $name, $description, [], null, [], [], $anyOf);
     }
 
     public function toArray(): array
