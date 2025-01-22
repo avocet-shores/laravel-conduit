@@ -16,10 +16,6 @@ class TestCase extends Orchestra
     {
         parent::setUp();
 
-        Factory::guessFactoryNamesUsing(
-            fn (string $modelName) => 'AvocetShores\\Conduit\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        );
-
         // $this->setUpDatabase();
     }
 

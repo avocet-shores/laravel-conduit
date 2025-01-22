@@ -37,8 +37,7 @@
     },
     "autoload": {
         "psr-4": {
-            "AvocetShores\\Conduit\\": "src/",
-            "AvocetShores\\Conduit\\Database\\Factories\\": "database/factories/"
+            "AvocetShores\\Conduit\\": "src/"
         }
     },
     "autoload-dev": {

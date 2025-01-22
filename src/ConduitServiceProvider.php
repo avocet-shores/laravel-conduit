@@ -2,7 +2,6 @@
 
 namespace AvocetShores\Conduit;
 
-use AvocetShores\Conduit\Commands\ConduitCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
