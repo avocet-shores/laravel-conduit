@@ -3,7 +3,6 @@
 namespace AvocetShores\Conduit\Tests;
 
 use AvocetShores\Conduit\ConduitServiceProvider;
-use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Encryption\Encrypter;
 use Illuminate\Support\Facades\File;
