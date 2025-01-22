@@ -124,7 +124,7 @@ class ConduitService
         return $this;
     }
 
-    public function enableJsonOutput(): self
+    public function withJsonOutput(): self
     {
         $this->context->setResponseFormat(ResponseFormat::JSON);
 

@@ -171,7 +171,7 @@ it('enableJsonOutput sets the response format to JSON', function () {
 
     $service = new ConduitService($driverMock);
     $service->usingModel('json-model')
-        ->enableJsonOutput();
+        ->withJsonOutput();
 
     $response = $service->run();
     expect($response->output)->toBe('Returned in JSON');
@@ -239,6 +239,44 @@ it('using the Conduit facade works and calls ConduitService under the hood', fun
         ->and($response->usage->totalTokens)->toBe(30);
 });
 
+it('can handle json output with the openai driver', function () {
+    // Mock the response that the HTTP client would return
+    \Illuminate\Support\Facades\Http::fake([
+        '*' => \Illuminate\Support\Facades\Http::response([
+            'choices' => [
+                [
+                    'message' => [
+                        'content' => json_encode([
+                            'key' => 'value',
+                            'key2' => 'value2',
+                        ]),
+                    ],
+                ],
+            ],
+            'usage' => [
+                'prompt_tokens' => 10,
+                'completion_tokens' => 20,
+                'total_tokens' => 30,
+            ],
+            'model' => 'gpt-4',
+        ]),
+    ]);
+
+    // If Conduit::make() internally resolves ConduitService, test the chain
+    $response = Conduit::make('openai')
+        ->usingModel('gpt-4')
+        ->withInstructions('You are a helpful assistant.')
+        ->addMessage('Hello from facade test!', Role::USER)
+        ->withJsonOutput()
+        ->run();
+
+    expect($response)->toBeInstanceOf(ConversationResponse::class)
+        ->and($response->outputArray)->toBe([
+            'key' => 'value',
+            'key2' => 'value2',
+        ]);
+});
+
 it('runs the amazon_bedrock driver', function () {
     // Create the mock client
     $mockClient = Mockery::mock(BedrockRuntimeClient::class);
@@ -276,6 +314,54 @@ it('runs the amazon_bedrock driver', function () {
     // Assert the response is what we expect
     $this->assertInstanceOf(ConversationResponse::class, $response);
     $this->assertEquals('Mocked response from Bedrock', $response->output ?? null);
+});
+
+it('parses json response from bedrock', function () {
+    // Create the mock client
+    $mockClient = Mockery::mock(BedrockRuntimeClient::class);
+
+    // Define what we expect when the "converse" method is called
+    $mockClient->shouldReceive('converse')
+        ->once()
+        ->with(Mockery::type('array'))
+        ->andReturn(new Aws\Result([
+            'output' => [
+                'message' => [
+                    'content' => [
+                        [
+                            'text' => json_encode([
+                                'key' => 'value',
+                                'key2' => 'value2',
+                            ]),
+                        ],
+                    ],
+                ],
+            ],
+            'usage' => [
+                'inputTokens' => 10,
+                'outputTokens' => 20,
+                'totalTokens' => 30,
+            ],
+        ]));
+
+    // Instantiate the driver with the mocked client
+    $driver = new AmazonBedrockDriver($mockClient);
+
+    // Bind the driver to the container so it can be resolved
+    app()->bind(AmazonBedrockDriver::class, fn () => $driver);
+
+    // Run Conduit
+    $response = Conduit::bedrock('some-model')
+        ->withInstructions('You are a helpful assistant.')
+        ->withJsonOutput()
+        ->run();
+
+    // Assert the response is what we expect
+    $this->assertInstanceOf(ConversationResponse::class, $response);
+    $this->assertEquals([
+        'key' => 'value',
+        'key2' => 'value2',
+    ], $response->outputArray);
 });
 
 it('calls the fallback driver when the first driver throws a provider exception', function () {
