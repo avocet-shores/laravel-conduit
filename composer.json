@@ -1,7 +1,7 @@
 {
     "name": "avocet-shores/laravel-conduit",
     "description": "Laravel Conduit offers a clean, unified API for working with multiple AI providers.",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "keywords": [
         "Avocet Shores",
         "laravel",

@@ -74,9 +74,11 @@ class ConduitService
 
         if ($this->context->getFallbackDriver() && $this->context->getFallbackModel()) {
             $this->context->setIsFallback(true);
+            return $this->run();
         }
 
-        return $this->run();
+        // If we don't have a fallback driver and model, we need to throw the exception
+        throw $e;
     }
 
     /**

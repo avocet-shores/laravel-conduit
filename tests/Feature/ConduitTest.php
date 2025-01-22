@@ -392,3 +392,47 @@ it('calls the fallback driver when the first driver throws a provider exception'
 
     expect($response->output)->toBe('Fallback response');
 });
+
+it('throws an exception when the fallback driver also throws a provider exception', function () {
+    $driverMock = Mockery::mock(DriverInterface::class);
+
+    // The first driver should throw a provider exception
+    $driverMock->shouldReceive('run')
+        ->once()
+        ->andThrow(new ConduitProviderNotAvailableException('FakeDriver', new AIRequestContext));
+
+    $fallbackDriverMock = Mockery::mock(DriverInterface::class);
+
+    // The fallback driver should throw a provider exception
+    $fallbackDriverMock->shouldReceive('run')
+        ->once()
+        ->andThrow(new ConduitProviderNotAvailableException('FallbackDriver', new AIRequestContext));
+
+    config()->set('conduit.drivers.fallback_driver', 'fallback_driver');
+    app()->bind('fallback_driver', function () use ($fallbackDriverMock) {
+        return $fallbackDriverMock;
+    });
+
+    $service = new ConduitService($driverMock);
+
+    $service->usingModel('some-model')
+        ->withInstructions('You are a helpful assistant.')
+        ->withFallback('fallback_driver', 'fallback-model')
+        ->run();
+})->throws(ConduitProviderNotAvailableException::class);
+
+it('throws an exception when the fallback driver is not set', function () {
+    $driverMock = Mockery::mock(DriverInterface::class);
+
+    // The first driver should throw a provider exception
+    $driverMock->shouldReceive('run')
+        ->once()
+        ->andThrow(new ConduitProviderNotAvailableException('FakeDriver', new AIRequestContext));
+
+    $service = new ConduitService($driverMock);
+
+    $service->usingModel('some-model')
+        ->withInstructions('You are a helpful assistant.')
+        ->run();
+
+})->throws(ConduitProviderNotAvailableException::class);
