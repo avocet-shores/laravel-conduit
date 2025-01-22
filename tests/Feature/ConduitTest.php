@@ -251,9 +251,9 @@ it('runs the amazon_bedrock driver', function () {
             'output' => [
                 'message' => [
                     'content' => [
-                        ['text' => 'Mocked response from Bedrock']
-                    ]
-                ]
+                        ['text' => 'Mocked response from Bedrock'],
+                    ],
+                ],
             ],
             'usage' => [
                 'inputTokens' => 10,
@@ -266,7 +266,7 @@ it('runs the amazon_bedrock driver', function () {
     $driver = new AmazonBedrockDriver($mockClient);
 
     // Bind the driver to the container so it can be resolved
-    app()->bind(AmazonBedrockDriver::class, fn() => $driver);
+    app()->bind(AmazonBedrockDriver::class, fn () => $driver);
 
     // Run Conduit
     $response = Conduit::bedrock('some-model')

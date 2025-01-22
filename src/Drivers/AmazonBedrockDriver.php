@@ -21,6 +21,7 @@ class AmazonBedrockDriver implements DriverInterface
     {
         if ($client) {
             $this->client = $client;
+
             return;
         }
 
