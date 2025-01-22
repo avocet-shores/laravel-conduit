@@ -22,17 +22,14 @@ enum Role: string
     case USER = 'user';
 
     case ASSISTANT = 'assistant';
-    case FUNCTION = 'function';
 
     public static function fromString(string $role): self
     {
         return match (Str::lower($role)) {
             'system' => self::SYSTEM,
-            'user' => self::USER,
             'assistant' => self::ASSISTANT,
-            'function' => self::FUNCTION,
             'developer' => self::DEVELOPER,
-            default => 'user',
+            default => self::USER,
         };
     }
 }
