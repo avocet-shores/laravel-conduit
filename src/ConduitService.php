@@ -74,6 +74,7 @@ class ConduitService
 
         if ($this->context->getFallbackDriver() && $this->context->getFallbackModel()) {
             $this->context->setIsFallback(true);
+
             return $this->run();
         }
 
