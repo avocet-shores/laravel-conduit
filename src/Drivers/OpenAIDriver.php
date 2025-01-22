@@ -16,16 +16,6 @@ use Illuminate\Support\Facades\Http;
 class OpenAIDriver implements DriverInterface
 {
     /**
-     * Whether the response should be in structured mode.
-     */
-    protected bool $structuredMode = false;
-
-    /**
-     * The schema for the structured output.
-     */
-    protected ?Schema $schema;
-
-    /**
      * The OpenAI request object.
      */
     protected ?OpenAIRequest $request;
@@ -83,7 +73,7 @@ class OpenAIDriver implements DriverInterface
             ],
             ResponseFormat::STRUCTURED_SCHEMA => $this->request->responseFormat = [
                 'type' => 'json_schema',
-                'schema' => $this->schema,
+                'schema' => $context->getSchema(),
             ],
             default => null,
         };
