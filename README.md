@@ -187,6 +187,29 @@ new Schema(
 }
 ```
 
+#### What if my model doesn't support structured outputs?
+
+You can still enjoy automatic json decoding by adding `withJsonOutput()` and defining your own schema 
+somewhere within your prompt. It's important to note, however, that this will not enforce the schema on the AI 
+model. You will need to validate the response yourself in a subsequent step:
+
+```php
+$response = Conduit::make('openai', 'gpt-4o')
+    ->withInstructions('Please return a JSON object in the format { "haiku": string }.')
+    ->pushMiddleware(function (AIRequestContext $context, $next) {
+        // Validate the response
+        $response = $next($context);
+        
+        if (!isset($response->outputArray['haiku'])) {
+            throw new Exception('The AI response did not match the expected schema.');
+        }
+
+        return $response;
+    })
+    ->withJsonOutput()
+    ->run();
+```
+
 
 ### Middleware and Pipelines
 
@@ -292,12 +315,7 @@ Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed re
 
 ## Contributing
 
-1. Fork the repository.
-2. Make your changes in a dedicated branch.
-3. Write tests for your changes.
-4. Submit a Pull Request.
-
-We welcome new drivers, bug fixes, and improvements!
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 
