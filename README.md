@@ -132,7 +132,61 @@ $response = Conduit::make('openai', 'gpt-4o')
     ->run();
 ```
 
-Note that if the driver does not support structured outputs, the request will still return whatever format the provider offers.
+Conduit ensures that the schema request is formatted exactly how OpenAI expects, so your simple Schema definition:
+    
+```php
+new Schema(
+    name: 'research_paper_extraction',
+    description: 'Extract the title, authors, and abstract from a research paper.',
+    properties: [
+        Input::string('title', 'The title of the research paper.'),
+        Input::array('authors', 'The authors of the research paper.', [Input::string()]),
+        Input::string('abstract', 'The abstract of the research paper.')    
+    ]
+);
+```
+
+...is automatically converted into the JSON format OpenAI requires:
+
+```json
+{
+    "response_format": {
+        "type": "json_schema",
+        "json_schema": {
+            "name": "research_paper_extraction",
+            "description": "Extract the title, authors, and abstract from a research paper.",
+            "schema": {
+                "type": "object",
+                "properties": {
+                    "title": {
+                        "description": "The title of the research paper.",
+                        "type": "string"
+                    },
+                    "authors": {
+                        "type": "array",
+                        "items": {
+                            "description": "The authors of the research paper.",
+                            "type": "string"
+                        }
+                    },
+                    "abstract": {
+                        "description": "The abstract of the research paper.",
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "title",
+                    "authors",
+                    "abstract"
+                ],
+                "additionalProperties": false
+            },
+            "strict": true
+        }
+    }
+}
+```
+
 
 ### Middleware and Pipelines
 
