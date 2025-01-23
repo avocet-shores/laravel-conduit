@@ -172,9 +172,9 @@ class Input implements Arrayable
                 break;
             case Type::AnyOf:
                 throw new NotImplementedException('AnyOf type is not yet implemented');
-//                $input['type'] = $this->type->value;
-//                $input['anyOf'] = $this->anyOf;
-//                break;
+                //                $input['type'] = $this->type->value;
+                //                $input['anyOf'] = $this->anyOf;
+                //                break;
         }
 
         return $input;
