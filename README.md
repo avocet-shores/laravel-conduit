@@ -50,8 +50,8 @@ Below is a typical usage example with the Conduit facade:
 ```php
 $response = Conduit::make('openai', 'gpt-4o')
     ->withInstructions(
-     "Write a haiku about the user's input. " .
-     'Return your response in the JSON format { "haiku": string }.'
+        "Write a haiku about the user's input. " .
+        'Return your response in the JSON format { "haiku": string }.'
     )
     ->addMessage('Laravel Conduit', Role::USER)
     ->withJsonOutput() // Automatically decodes the JSON into the response object
