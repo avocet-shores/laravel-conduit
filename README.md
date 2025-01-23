@@ -6,14 +6,6 @@
 [![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/avocet-shores/laravel-conduit/fix-php-code-style-issues.yml?branch=main&label=code%20style&style=flat-square)](https://github.com/avocet-shores/laravel-conduit/actions?query=workflow%3A"Fix+PHP+code+style+issues"+branch%3Amain)
 [![Total Downloads](https://img.shields.io/packagist/dt/avocet-shores/laravel-conduit.svg?style=flat-square)](https://packagist.org/packages/avocet-shores/laravel-conduit)
 
-Laravel Conduit offers a fluent, unified API for working with disparate AI providers. It focuses on conversational 
-models 
-(e.g., completions with OpenAI, converse with Amazon Bedrock) while ensuring a consistent interface across all 
-providers. This makes it easy to switch providers or models without changing how your application consumes AI services.
-
-In the event of provider issues, you can even set up fallback providers, ensuring your application automatically 
-recovers from external outages.
-
 ## Why Conduit?
 
 Most AI packages today are tightly coupled with a single AI provider, locking you into their ecosystem (and their 
