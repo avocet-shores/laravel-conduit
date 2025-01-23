@@ -14,9 +14,24 @@ providers. This makes it easy to switch providers or models without changing how
 In the event of provider issues, you can even set up fallback providers, ensuring your application automatically 
 recovers from external outages.
 
+## Why Conduit?
+
+Most AI packages today are tightly coupled with a single AI provider, locking you into their ecosystem (and their 
+outages). Conduit offers a
+flexible, provider-agnostic solution that allows you to switch between providers without changing your code. You can 
+even create custom drivers for your own AI services, all while maintaining a consistent API. Want to add OpenAI as a 
+backup to your on-prem model in case of an outage? Just add a fallback:
+
+```php
+$response = Conduit::make('on_prem_ai', 'my-model')
+    ->withFallback('openai', 'gpt-4o')
+    ->withInstructions('Write an inspirational message.')
+    ->run();
+```
+
 ## Key Features
 
-- Unified API for various AI providers (Currently OpenAI and Amazon Bedrock)
+- Unified API for various AI providers (Supports OpenAI and Amazon Bedrock out of the box, with more on the way)
 - Automatic fallback to secondary drivers and/or models for improved reliability
 - Easy extensibility: implement a simple interface to add custom drivers
 - Pipeline-based middleware support
@@ -73,7 +88,7 @@ use AvocetShores\Conduit\Enums\Role;
 $response = Conduit::make('openai', 'gpt-4o')
     ->withFallback('amazon_bedrock', 'claude sonnet 3.5 v2')
     ->withInstructions('You are a helpful assistant.')
-    ->addMessage('Hello from Conduit test!', Role::USER)
+    ->addMessage('Hello from Conduit!', Role::USER)
     ->run();
 ```
 
@@ -82,9 +97,9 @@ model, keeping your AI-driven features running.
 
 ## Configuration
 
-Conduit's configuration file allows you to set up your provider-specific authentication methods.
+Conduit's configuration file allows you to set up your provider-specific authentication variables.
 
-### OpenAI Configuration
+### OpenAI
 
 To use OpenAI, you must provide your API key in the `.env` file:
 
@@ -92,7 +107,7 @@ To use OpenAI, you must provide your API key in the `.env` file:
 OPENAI_API_KEY=your-api-key
 ```
 
-### Amazon Bedrock Configuration
+### Amazon Bedrock
 
 To use Amazon Bedrock, you'll need to provide your AWS credentials in the `.env` file. By default, Conduit 
 references the same `.env` variables as the AWS SDK and other AWS services, but you can always point them to your own
@@ -108,13 +123,13 @@ AWS_DEFAULT_REGION=your-region
 
 ### Structured Outputs 
 
-> Currently only supported by some of the OpenAI models
+> Currently only supported by some of OpenAI's models.
+> 
+> Read more about structured outputs in [OpenAI's 
+> documentation](https://platform.openai.com/docs/guides/structured-outputs).
 
-Certain drivers support specifying a complete schema that the model is then forced to adhere to. If your chosen driver 
-supports 
-it, you can 
-enable structured output by passing a 
-`Schema` into `enableStructuredOutput()`:
+Certain drivers and models support specifying a complete schema that the model is then forced to adhere to. If your 
+chosen driver/model supports it, you can enable structured output by passing a `Schema` into `enableStructuredOutput()`:
 
 ```php
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
