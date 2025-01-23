@@ -3,6 +3,7 @@
 namespace AvocetShores\Conduit\Features\StructuredOutputs;
 
 use Illuminate\Contracts\Support\Arrayable;
+use Nette\NotImplementedException;
 
 class Input implements Arrayable
 {
@@ -170,9 +171,10 @@ class Input implements Arrayable
                 $input['items'] = $this->formatArrayItems($this->items);
                 break;
             case Type::AnyOf:
-                $input['type'] = $this->type->value;
-                $input['anyOf'] = $this->anyOf;
-                break;
+                throw new NotImplementedException('AnyOf type is not yet implemented');
+//                $input['type'] = $this->type->value;
+//                $input['anyOf'] = $this->anyOf;
+//                break;
         }
 
         return $input;
