@@ -81,7 +81,7 @@ class Schema implements Arrayable, JsonSerializable
 
         $properties = [];
         foreach ($this->properties as $property) {
-            // Move name field to the key fo the properties array
+            // Move name field to the key of the properties array
             $properties[$property->name] = $property->toArray();
             unset($properties[$property->name]['name']);
         }
