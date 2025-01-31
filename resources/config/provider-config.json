@@ -1,22 +1,21 @@
 {
     "openai": {
-
+        "o3-mini": {
+            "instructions_role": "developer"
+        },
         "o1": {
             "instructions_role": "developer"
         },
-
+        "o1-mini": {
+            "instructions_role": "developer"
+        },
         "gpt-4o": {
             "instructions_role": "system"
         }
     },
-
     "amazon_bedrock": {
-
         "anthropic": {
-
-            "claude-3-5-sonnet-v2": {
-
-            }
+            "claude-3-5-sonnet-v2": {}
         }
     }
 }
