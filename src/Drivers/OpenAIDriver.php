@@ -82,6 +82,8 @@ class OpenAIDriver implements DriverInterface
             ],
             default => null,
         };
+
+        $this->request->reasoningEffort = $context->getReasoningEffort();
     }
 
     /**
