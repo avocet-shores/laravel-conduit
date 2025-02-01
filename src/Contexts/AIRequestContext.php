@@ -4,6 +4,7 @@ namespace AvocetShores\Conduit\Contexts;
 
 use AvocetShores\Conduit\Drivers\DriverInterface;
 use AvocetShores\Conduit\Dto\Message;
+use AvocetShores\Conduit\Enums\ReasoningEffort;
 use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Features\StructuredOutputs\Schema;
@@ -54,10 +55,24 @@ class AIRequestContext
      */
     protected array $driverData = [];
 
+    /**
+     * Reasoning effort used for reasoning models.
+     */
+    protected ?ReasoningEffort $reasoningEffort = null;
+
+    /**
+     * Optional fallback driver to use if the primary driver fails.
+     */
     protected ?DriverInterface $fallbackDriver = null;
 
+    /**
+     * Optional fallback model to use if the primary model fails.
+     */
     protected ?string $fallbackModel = null;
 
+    /**
+     * Indicates if the current request is a fallback request.
+     */
     protected bool $isFallback = false;
 
     public static function create(?string $runId = null): self
@@ -210,5 +225,17 @@ class AIRequestContext
     public function isFallback(): bool
     {
         return $this->isFallback;
+    }
+
+    public function setReasoningEffort(ReasoningEffort $reasoningEffort): self
+    {
+        $this->reasoningEffort = $reasoningEffort;
+
+        return $this;
+    }
+
+    public function getReasoningEffort(): ?ReasoningEffort
+    {
+        return $this->reasoningEffort;
     }
 }

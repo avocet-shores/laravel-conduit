@@ -5,6 +5,7 @@ namespace AvocetShores\Conduit;
 use AvocetShores\Conduit\Contexts\AIRequestContext;
 use AvocetShores\Conduit\Drivers\DriverInterface;
 use AvocetShores\Conduit\Dto\ConversationResponse;
+use AvocetShores\Conduit\Enums\ReasoningEffort;
 use AvocetShores\Conduit\Enums\ResponseFormat;
 use AvocetShores\Conduit\Enums\Role;
 use AvocetShores\Conduit\Exceptions\AiModelNotSetException;
@@ -130,6 +131,13 @@ class ConduitService
     public function withJsonOutput(): self
     {
         $this->context->setResponseFormat(ResponseFormat::JSON);
+
+        return $this;
+    }
+
+    public function withReasoningEffort(ReasoningEffort $reasoningEffort): self
+    {
+        $this->context->setReasoningEffort($reasoningEffort);
 
         return $this;
     }
